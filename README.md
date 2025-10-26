@@ -12,6 +12,36 @@ A community platform for programmers to share coding errors and get help fixing 
 - **Dark/Light Theme**: Toggle between light and dark modes
 - **Real-time Updates**: Instant updates using Pinia state management
 
+## Project Goals (Refined Version)
+
+### 1. Build a Helpful Programming Community
+
+Create an online space where developers can share their coding errors, get solutions, and help others in a collaborative environment.
+
+### 2. Encourage Knowledge Sharing
+
+Develop a platform that collects and organizes common programming problems and solutions, making it easier for users to learn from each other.
+
+### 3. Provide a Simple and Clean User Experience
+
+Design an easy-to-use, responsive interface that allows users to post questions, search, and answer quickly without confusion.
+
+### 4. Enable Real-Time Interaction
+
+Implement live updates for posts and answers using Vue and Pinia so users can see changes instantly without refreshing the page.
+
+### 5. Support All Devices and Themes
+
+Make the platform fully responsive on all screen sizes with both light and dark themes for better accessibility and comfort.
+
+### 6. Ensure Secure and Smooth Performance
+
+Use secure authentication, fast loading times, and modern technologies to keep the platform safe, efficient, and reliable.
+
+### 7. Provide Administrative Control
+
+Include an admin dashboard to help manage users, posts, and system activity effectively.
+
 ## Tech Stack
 
 - **Vue 3** - Progressive JavaScript framework
@@ -25,27 +55,30 @@ A community platform for programmers to share coding errors and get help fixing 
 
 ## Project Structure
 
-```
+```plaintext
 src/
-├── components/          # Reusable Vue components
-│   ├── Navbar.vue      # Navigation bar with search and theme toggle
-│   ├── PostCard.vue    # Post preview card component
-│   ├── AnswerCard.vue  # Answer display component
-│   └── Footer.vue       # Site footer
-├── views/              # Page components
-│   ├── HomeView.vue    # Home page with post listings
-│   ├── PostDetailsView.vue # Individual post view
-│   ├── AddPostView.vue # Create new post form
-│   ├── ProfileView.vue # User profile page
-│   └── AuthView.vue    # Login/register form
-├── store/              # Pinia stores
-│   └── postsStore.js   # Main application state
-├── router/              # Vue Router configuration
-│   └── index.js        # Route definitions
-├── assets/             # Static assets
-│   └── styles.css      # Global styles and Tailwind imports
-├── App.vue             # Root component
-└── main.js             # Application entry point
+├── components/ # Reusable Vue components
+│ ├── Navbar.vue # Navigation bar with search and theme toggle
+│ ├── PostCard.vue # Post preview card component
+│ ├── AnswerCard.vue # Answer display component
+│ ├── TagPicker.vue # Tag selection component
+│ └── Footer.vue # Site footer
+├── views/ # Page components
+│ ├── HomeView.vue # Home page with post listings
+│ ├── PostDetailsView.vue # Individual post view
+│ ├── AddPostView.vue # Create new post form
+│ ├── ProfileView.vue # User profile page
+│ ├── LoginView.vue # Login/ form
+│ └── SigneupView.vue # register form
+├── store/ # Pinia stores
+│ └── postsStore.ts # Main application state
+├── router/ # Vue Router configuration
+│ └── index.ts # Route definitions
+├── assets/ # Static assets
+│ └── styles.css # Global styles and Tailwind imports
+├── App.vue # Root component
+├── env.d.ts # TypeScript environment declarations
+└── main.ts # Application entry point
 ```
 
 ## Getting Started
@@ -59,25 +92,26 @@ src/
 
 1. **Clone the repository**
 
-   ```bash
+```bash
    git clone <repository-url>
    cd CodeFix-project
-   ```
+```
 
 2. **Install dependencies**
 
-   ```bash
+```bash
    npm install
-   ```
+```
 
 3. **Start the development server**
 
-   ```bash
-   npm run dev
-   ```
+```bash
+npm run dev
+```
 
 4. **Open your browser**
-   Navigate to `http://localhost:5173` to view the application.
+
+Navigate to `http://localhost:5173` to view the application.
 
 ### Available Scripts
 
@@ -157,3 +191,46 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## Supports
 
 For support, email support@codefix.dev or create an issue in the repository.
+## UseCases
+
+::: mermaid
+
+flowchart LR
+Visitor[Visitor]
+User[User]
+Admin[Admin]
+
+    subgraph "CodeFix Q&A Platform"
+        UC1[Browse Posts]
+        UC2[Register / Login]
+        UC3[Create Post]
+        UC4[View Post Details]
+        UC5[Add Answer]
+        UC6[Edit/Delete Own Post]
+        UC7[Mark Best Answer]
+        UC8[Edit Profile]
+        UC9[Manage Users]
+        UC10[Manage Posts]
+        UC11[View System Statistics]
+        UC12[Manage Categories/Tags]
+    end
+
+    %% Visitor interactions
+    Visitor --> UC1
+    Visitor --> UC2
+
+    %% User interactions
+    User --> UC3
+    User --> UC4
+    User --> UC5
+    User --> UC6
+    User --> UC7
+    User --> UC8
+
+    %% Admin interactions
+    Admin --> UC9
+    Admin --> UC10
+    Admin --> UC11
+    Admin --> UC12
+
+:::
