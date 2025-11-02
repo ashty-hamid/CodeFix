@@ -1,0 +1,82 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "username": "banaz",
+      "email": "banaz@example.com",
+      "password": "hashed_password_1",
+      "role": "admin",
+      "profileImageUrl": "https://example.com/avatars/banaz.png",
+      "createdAt": "2025-11-01T09:30:00Z",
+      "updatedAt": "2025-11-02T12:00:00Z"
+    },
+    {
+      "id": 2,
+      "username": "sara",
+      "email": "sara@example.com",
+      "password": "hashed_password_2",
+      "role": "user",
+      "profileImageUrl": "https://example.com/avatars/sara.png",
+      "createdAt": "2025-11-01T10:15:00Z",
+      "updatedAt": "2025-11-02T11:00:00Z"
+    }
+  ],
+
+  "posts": [
+    {
+      "id": 1,
+      "title": "Understanding TypeScript Generics",
+      "body": "Generics are powerful tools for creating reusable components...",
+      "views": 120,
+      "excerpt": "A beginner-friendly guide to TS generics.",
+      "createdAt": "2025-11-02T09:00:00Z",
+      "authorId": 1
+    },
+    {
+      "id": 2,
+      "title": "Zod vs Yup — Which Should You Use?",
+      "body": "In this post, we'll compare two schema validation libraries...",
+      "views": 80,
+      "excerpt": "Comparing Zod and Yup for frontend developers.",
+      "createdAt": "2025-11-02T10:00:00Z",
+      "authorId": 2
+    }
+  ],
+
+  "comments": [
+    {
+      "id": 1,
+      "content": "This post really helped me understand generics!",
+      "score": 5,
+      "createdAt": "2025-11-02T10:30:00Z",
+      "updatedAt": "2025-11-02T11:00:00Z",
+      "postId": 1,
+      "authorId": 2
+    },
+    {
+      "id": 2,
+      "content": "Nice comparison — I prefer Zod for its TypeScript support.",
+      "score": 3,
+      "createdAt": "2025-11-02T11:15:00Z",
+      "updatedAt": "2025-11-02T11:30:00Z",
+      "postId": 2,
+      "authorId": 1
+    }
+  ],
+
+  "tags": [
+    { "id": 1, "name": "typescript", "description": "TypeScript related topics", "createdAt": "2025-11-01T09:00:00Z" },
+    { "id": 2, "name": "frontend", "description": "Frontend web development", "createdAt": "2025-11-01T09:10:00Z" }
+  ],
+
+  "post_tags": [
+    { "postId": 1, "tagId": 1 },
+    { "postId": 1, "tagId": 2 },
+    { "postId": 2, "tagId": 2 }
+  ],
+
+  "votes": [
+    { "id": 1, "type": "upvote", "createdAt": "2025-11-02T10:45:00Z", "userId": 2, "commentId": 1 },
+    { "id": 2, "type": "downvote", "createdAt": "2025-11-02T11:00:00Z", "userId": 1, "commentId": 2 }
+  ]
+}
