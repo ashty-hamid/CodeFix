@@ -142,16 +142,3 @@ export interface ApiError {
   code?: string;
   errors?: Record<string, string[]>;
 }
-
-// ============================================
-// Legacy Product Type (kept for backward compatibility)
-// ============================================
-
-export interface Product {
-  id: number;
-  title: string;
-  price: number;
-  description: string;
-  category: string;
-  image?: string;
-}
