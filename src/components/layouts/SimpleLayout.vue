@@ -2,7 +2,9 @@
   <div class="cf-app">
     <Navbar />
     <main class="cf-main">
-      <slot />
+      <div class="cf-center-card">
+        <slot />
+      </div>
     </main>
     <PageFooter />
   </div>

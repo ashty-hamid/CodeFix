@@ -1,8 +1,11 @@
-<script setup lang="ts">
+<template>
+  <RouterView />
+</template>
+
+<!-- <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
 
-</script>
-
+</script>s
 <template>
   <header>
 
@@ -76,4 +79,4 @@ nav a:first-of-type {
     margin-top: 1rem;
   }
 }
-</style>
+</style> -->
