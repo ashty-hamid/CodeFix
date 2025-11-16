@@ -43,10 +43,18 @@
               </span>
             </div>
 
-            <div style="display:flex; gap:12px; align-items:center; color:var(--muted)">
-              <span>👤 {{ p.author?.username ?? 'unknown' }}</span>
-              <span>💬 {{ p.answersCount }} answer{{ p.answersCount===1?'':'s' }}</span>
-            </div>
+            <div style="display:flex; gap:16px; align-items:center; color:var(--muted)">
+  <div style="display:flex; align-items:center; gap:6px;">
+    <button @click.stop="vote(p.id, 1)"
+            style="background:none; border:none; cursor:pointer; color:#4ade80; font-size:18px;">▲</button>
+    <span>{{ p.voteScore }}</span>
+    <button @click.stop="vote(p.id, -1)"
+            style="background:none; border:none; cursor:pointer; color:#f87171; font-size:18px;">▼</button>
+  </div>
+
+  <span>💬 {{ p.answersCount }}</span>
+</div>
+
           </footer>
         </article>
       </div>
@@ -58,6 +66,14 @@
 import DefaultLayout from "@/components/layouts/DefaultLayout.vue";
 import { computed, ref } from "vue";
 import { usePostsStore } from "@/stores/postsStore";
+import { useAuthStore } from "@/stores/authStore";
+const auth = useAuthStore();
+
+function vote(postId: number, value: 1 | -1) {
+  if (!auth.isLoggedIn) return alert("Login to vote.");
+  store.votePost({ postId, userId: auth.user!.id, value });
+}
+
 
 const store = usePostsStore();
 const tags = computed(() => store.allTags);
