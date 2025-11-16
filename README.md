@@ -193,7 +193,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 For support, email support@codefix.dev or create an issue in the repository.
 ## UseCases
 
-::: mermaid
+```mermaid
 
 flowchart LR
 Visitor[Visitor]
@@ -233,5 +233,4 @@ Admin[Admin]
     Admin --> UC11
     Admin --> UC12
 
-:::
-# test
+```
