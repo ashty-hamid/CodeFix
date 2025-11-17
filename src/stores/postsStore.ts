@@ -1,114 +1,166 @@
-import { defineStore } from "pinia";
+import { defineStore } from 'pinia'
+import sample from '@/data/sampleData.json'
 
-export const usePostsStore = defineStore("postsStore", {
+export const usePostsStore = defineStore('postsStore', {
   state: () => ({
-    posts: [],
-    tags: [],
-    answers: [],   // <-- answers live here, not inside posts
-    votes: [],     // <-- votes for posts
-    answerVotes: [] // <-- votes for answers
+    users: sample.users,
+    posts: sample.posts,
+    comments: sample.comments, // answers = comments
+    tags: sample.tags,
+    postTags: sample.post_tags,
+    votes: sample.votes, // votes on comments
+
+    nextIds: {
+      post: Math.max(...sample.posts.map((p) => p.id)) + 1,
+      comment: Math.max(...sample.comments.map((c) => c.id)) + 1,
+      vote: Math.max(...sample.votes.map((v) => v.id)) + 1,
+    },
   }),
 
   getters: {
+    // ----------------------------------------------------
+    // All tags
+    // ----------------------------------------------------
     allTags(state) {
-      return state.tags;
+      return state.tags
     },
 
+    // ----------------------------------------------------
+    // Posts enriched with author, tags, answers count, etc.
+    // ----------------------------------------------------
     postsWithMeta(state) {
-      return state.posts.map(p => {
-        const postAnswers = state.answers.filter(a => a.postId === p.id);
+      return state.posts.map((post) => {
+        const author = state.users.find((u) => u.id === post.authorId)
 
-        const up = state.votes.filter(v => v.postId === p.id && v.value === 1).length;
-        const down = state.votes.filter(v => v.postId === p.id && v.value === -1).length;
+        const tagIds = state.postTags.filter((pt) => pt.postId === post.id).map((pt) => pt.tagId)
+
+        const postTags = tagIds.map((id) => state.tags.find((t) => t.id === id)).filter(Boolean)
+
+        const answers = state.comments.filter((c) => c.postId === post.id)
 
         return {
-          ...p,
-          tags: p.tags.map(id => state.tags.find(t => t.id === id)),
-          answersCount: postAnswers.length,
-          voteScore: up - down,
-          author: state.users?.find(u => u.id === p.authorId)
-        };
-      });
+          ...post,
+          author,
+          tags: postTags,
+          answersCount: answers.length,
+        }
+      })
     },
 
-    postById: (state) => (id) => {
-      const p = state.posts.find(p => p.id === id);
-      if (!p) return null;
+    // ----------------------------------------------------
+    // Single post with enriched answers (author + votes)
+    // ----------------------------------------------------
+    postById: (state) => (id: number) => {
+      const post = state.posts.find((p) => p.id === id)
+      if (!post) return null
 
-      const postAnswers = state.answers
-        .filter(a => a.postId === id)
-        .map(a => {
-          const up = state.answerVotes.filter(v => v.answerId === a.id && v.value === 1).length;
-          const down = state.answerVotes.filter(v => v.answerId === a.id && v.value === -1).length;
+      const author = state.users.find((u) => u.id === post.authorId)
+
+      const tagIds = state.postTags.filter((pt) => pt.postId === id).map((pt) => pt.tagId)
+
+      const postTags = tagIds.map((id) => state.tags.find((t) => t.id === id)).filter(Boolean)
+
+      const answers = state.comments
+        .filter((c) => c.postId === id)
+        .map((comment) => {
+          const commentVotes = state.votes.filter((v) => v.commentId === comment.id)
+          const score =
+            commentVotes.filter((v) => v.type === 'upvote').length -
+            commentVotes.filter((v) => v.type === 'downvote').length
+
+          const author = state.users.find((u) => u.id === comment.authorId)
 
           return {
-            ...a,
-            voteScore: up - down,
-            author: state.users?.find(u => u.id === a.authorId)
-          };
-        });
+            ...comment,
+            author,
+            score,
+          }
+        })
 
       return {
-        ...p,
-        tags: p.tags.map(id => state.tags.find(t => t.id === id)),
-        answers: postAnswers
-      };
-    }
+        ...post,
+        author,
+        tags: postTags,
+        answers,
+      }
+    },
   },
 
   actions: {
+    // ----------------------------------------------------
+    // ADD NEW POST
+    // ----------------------------------------------------
     addPost({ title, body, tagNames, authorId }) {
-      const id = this.posts.length + 1;
+      const id = this.nextIds.post++
 
+      // create new tags if necessary
       const tagIds = tagNames.map((name) => {
-        let t = this.tags.find((x) => x.name === name);
-        if (!t) {
-          t = { id: this.tags.length + 1, name };
-          this.tags.push(t);
+        let tag = this.tags.find((t) => t.name.toLowerCase() === name.toLowerCase())
+        if (!tag) {
+          tag = {
+            id: this.tags.length + 1,
+            name,
+            description: '',
+            createdAt: new Date().toISOString(),
+          }
+          this.tags.push(tag)
         }
-        return t.id;
-      });
+        return tag.id
+      })
 
-      this.posts.unshift({
+      // add new post
+      this.posts.push({
         id,
         title,
         body,
-        tags: tagIds,
-        authorId,
+        views: 0,
+        excerpt: body.slice(0, 120),
         createdAt: new Date().toISOString(),
-      });
+        authorId,
+      })
 
-      return id;
+      // connect post <-> tags
+      tagIds.forEach((tagId) => {
+        this.postTags.push({ postId: id, tagId })
+      })
+
+      return id
     },
 
-    addAnswer({ postId, body, authorId }) {
-      const id = this.answers.length + 1;
+    // ----------------------------------------------------
+    // ADD NEW ANSWER (COMMENT)
+    // ----------------------------------------------------
+    addAnswer({ postId, content, authorId }) {
+      const id = this.nextIds.comment++
 
-      this.answers.push({
+      this.comments.push({
         id,
         postId,
-        body,
-        authorId,
+        content,
+        score: 0,
         createdAt: new Date().toISOString(),
-      });
+        updatedAt: new Date().toISOString(),
+        authorId,
+      })
     },
 
-    votePost({ postId, userId, value }) {
-      const ex = this.votes.find(v => v.postId === postId && v.userId === userId);
-      if (ex) {
-        ex.value = value;
+    // ----------------------------------------------------
+    // VOTE ANSWER
+    // ----------------------------------------------------
+    voteAnswer({ commentId, userId, type }) {
+      const existing = this.votes.find((v) => v.commentId === commentId && v.userId === userId)
+
+      if (existing) {
+        existing.type = type // overwrite previous vote
       } else {
-        this.votes.push({ postId, userId, value });
+        this.votes.push({
+          id: this.nextIds.vote++,
+          type,
+          createdAt: new Date().toISOString(),
+          userId,
+          commentId,
+        })
       }
     },
-
-    voteAnswer({ answerId, userId, value }) {
-      const ex = this.answerVotes.find(v => v.answerId === answerId && v.userId === userId);
-      if (ex) {
-        ex.value = value;
-      } else {
-        this.answerVotes.push({ answerId, userId, value });
-      }
-    }
-  }
-});
+  },
+})

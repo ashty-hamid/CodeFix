@@ -11,9 +11,9 @@
       />
 
       <div class="cf-nav-links">
-        <RouterLink to="/home" class="cf-link">Home</RouterLink>
-        <RouterLink to="/add" class="cf-link">Add Post</RouterLink>
-        <RouterLink to="/profile" class="cf-link">Profile</RouterLink>
+        <RouterLink to="/home" class="cf-link" active-class="cf-link-active"> Home </RouterLink>
+        <RouterLink to="/add" class="cf-link" active-class="cf-link-active">Add Post</RouterLink>
+        <RouterLink to="/profile" class="cf-link" active-class="cf-link-active">Profile</RouterLink>
 
         <template v-if="!auth.isLoggedIn">
           <RouterLink to="/login">
@@ -30,8 +30,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
-import { useAuthStore } from "@/stores/authStore";
-const auth = useAuthStore();
-const initials = computed(() => (auth.user?.name ?? "U").slice(0,1).toUpperCase());
+import { computed } from 'vue'
+import { useAuthStore } from '@/stores/authStore'
+const auth = useAuthStore()
+const initials = computed(() => (auth.user?.name ?? 'U').slice(0, 1).toUpperCase())
 </script>
