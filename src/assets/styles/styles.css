@@ -25,15 +25,14 @@
     @apply w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white;
   }
 }
-
 :root {
-  --bg: #0f172a;
-  --panel: #0b1220;
-  --muted: #94a3b8;
-  --line: #1f2937;
-  --brand: #60a5fa;
-  --brand-strong: #2563eb;
-  --text: #e5e7eb;
+  --bg: #1e293b; /* slate-800 - softer dark */
+  --panel: #334155; /* slate-700 */
+  --muted: #cbd5e1; /* slate-300 */
+  --line: #475569; /* slate-600 */
+  --brand: #60a5fa; /* blue-400 */
+  --brand-strong: #3b82f6; /* blue-500 */
+  --text: #f1f5f9; /* slate-50-ish white */
 }
 
 * {
@@ -51,7 +50,6 @@ body {
   color: var(--text);
 }
 
-/* layout */
 .cf-container {
   max-width: 1120px;
   margin-inline: auto;
@@ -69,12 +67,13 @@ body {
 
 /* Navbar */
 .cf-nav {
-  background: #0b1220;
+  background: #334155; /* panel */
   border-bottom: 1px solid var(--line);
   position: sticky;
   top: 0;
   z-index: 10;
 }
+
 .cf-nav-row {
   display: flex;
   align-items: center;
@@ -92,9 +91,12 @@ body {
   max-width: 520px;
   padding: 10px 12px;
   border-radius: 10px;
+  background: #4a5667;
   border: 1px solid var(--line);
-  background: #111827;
   color: var(--text);
+}
+.cf-search::placeholder{
+  color: rgb(200, 200, 200);
 }
 .cf-nav-links {
   display: flex;
@@ -111,18 +113,18 @@ body {
   color: var(--brand);
 }
 .cf-btn {
-  background: #1f2937;
-  color: var(--text);
+  background: #475569;
   border: 1px solid var(--line);
+  color: var(--text);
   padding: 8px 12px;
   border-radius: 10px;
   cursor: pointer;
 }
 .cf-btn:hover {
-  filter: brightness(1.1);
+  filter: brightness(1.15);
 }
 .cf-btn-primary {
-  background: var(--brand-strong);
+  background: #3b82f6;
   border-color: transparent;
 }
 .cf-btn-primary:hover {
@@ -139,7 +141,7 @@ body {
 
 /* Footer */
 .cf-footer {
-  background: #0b1220;
+  background: var(--panel);
   border-top: 1px solid var(--line);
   padding-top: 24px;
 }
@@ -171,4 +173,33 @@ body {
   border: 1px solid var(--line);
   padding: 28px;
   border-radius: 16px;
+}
+-footer-copy {
+  text-align: center;
+  color: var(--muted);
+  padding: 16px;
+  border-top: 1px solid var(--line);
+  margin-top: 16px;
+}
+
+/* Center card for SimpleLayout */
+.cf-center-card {
+  max-width: 480px;
+  margin-inline: auto;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  padding: 28px;
+  border-radius: 16px;
+}
+
+.card,
+.cf-center-card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+}
+
+.cf-link-active {
+  color: var(--brand); /* slight highlight */
+  border-bottom: 2px solid var(--brand-strong);
+  padding-bottom: 4px;
 }

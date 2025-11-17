@@ -7,7 +7,7 @@ const PostdetailView  = () => import("@/views/PostdetailView.vue");
 const AddPostView     = () => import("@/views/AddPostView.vue");
 const LoginView       = () => import("@/views/LoginView.vue");
 const SignupView      = () => import("@/views/Signupview.vue");
-const ProfileView     = () => import("@/views/Profileview.vue");
+const ProfileView     = () => import("@/views/ProfileView.vue");
 
 const routes = [
   { path: "/", redirect: "/home" },                                   // landing
