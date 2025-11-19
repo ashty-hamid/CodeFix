@@ -1,14 +1,15 @@
 import { defineStore } from 'pinia'
 import sample from '@/data/sampleData.json'
+import { useAuthStore } from './authStore'
 
 export const usePostsStore = defineStore('postsStore', {
   state: () => ({
     users: sample.users,
     posts: sample.posts,
-    comments: sample.comments, // answers = comments
+    comments: sample.comments,
     tags: sample.tags,
     postTags: sample.post_tags,
-    votes: sample.votes, // votes on comments
+    votes: sample.votes,
 
     nextIds: {
       post: Math.max(...sample.posts.map((p) => p.id)) + 1,
@@ -18,16 +19,10 @@ export const usePostsStore = defineStore('postsStore', {
   }),
 
   getters: {
-    // ----------------------------------------------------
-    // All tags
-    // ----------------------------------------------------
     allTags(state) {
       return state.tags
     },
 
-    // ----------------------------------------------------
-    // Posts enriched with author, tags, answers count, etc.
-    // ----------------------------------------------------
     postsWithMeta(state) {
       return state.posts.map((post) => {
         const author = state.users.find((u) => u.id === post.authorId)
@@ -47,9 +42,6 @@ export const usePostsStore = defineStore('postsStore', {
       })
     },
 
-    // ----------------------------------------------------
-    // Single post with enriched answers (author + votes)
-    // ----------------------------------------------------
     postById: (state) => (id: number) => {
       const post = state.posts.find((p) => p.id === id)
       if (!post) return null
@@ -64,36 +56,30 @@ export const usePostsStore = defineStore('postsStore', {
         .filter((c) => c.postId === id)
         .map((comment) => {
           const commentVotes = state.votes.filter((v) => v.commentId === comment.id)
+
           const score =
             commentVotes.filter((v) => v.type === 'upvote').length -
             commentVotes.filter((v) => v.type === 'downvote').length
 
           const author = state.users.find((u) => u.id === comment.authorId)
 
-          return {
-            ...comment,
-            author,
-            score,
-          }
+          return { ...comment, author, score }
         })
 
-      return {
-        ...post,
-        author,
-        tags: postTags,
-        answers,
-      }
+      return { ...post, author, tags: postTags, answers }
     },
   },
 
   actions: {
-    // ----------------------------------------------------
-    // ADD NEW POST
-    // ----------------------------------------------------
-    addPost({ title, body, tagNames, authorId }) {
+    /** ADD POST */
+    addPost({ title, body, tagNames }) {
+      const auth = useAuthStore()
+      if (!auth.user) throw new Error('You must be logged in to post')
+
+      const authorId = auth.user.id
       const id = this.nextIds.post++
 
-      // create new tags if necessary
+      // create tags if needed
       const tagIds = tagNames.map((name) => {
         let tag = this.tags.find((t) => t.name.toLowerCase() === name.toLowerCase())
         if (!tag) {
@@ -108,7 +94,6 @@ export const usePostsStore = defineStore('postsStore', {
         return tag.id
       })
 
-      // add new post
       this.posts.push({
         id,
         title,
@@ -119,18 +104,22 @@ export const usePostsStore = defineStore('postsStore', {
         authorId,
       })
 
-      // connect post <-> tags
       tagIds.forEach((tagId) => {
         this.postTags.push({ postId: id, tagId })
       })
 
+      // update user stats
+      auth.user.postsCount++
+
       return id
     },
 
-    // ----------------------------------------------------
-    // ADD NEW ANSWER (COMMENT)
-    // ----------------------------------------------------
-    addAnswer({ postId, content, authorId }) {
+    /** ADD ANSWER */
+    addAnswer({ postId, content }) {
+      const auth = useAuthStore()
+      if (!auth.user) throw new Error('Login required')
+
+      const authorId = auth.user.id
       const id = this.nextIds.comment++
 
       this.comments.push({
@@ -142,16 +131,17 @@ export const usePostsStore = defineStore('postsStore', {
         updatedAt: new Date().toISOString(),
         authorId,
       })
+
+      // update user stats
+      auth.user.answersCount++
     },
 
-    // ----------------------------------------------------
-    // VOTE ANSWER
-    // ----------------------------------------------------
+    /** VOTE ANSWER */
     voteAnswer({ commentId, userId, type }) {
       const existing = this.votes.find((v) => v.commentId === commentId && v.userId === userId)
 
       if (existing) {
-        existing.type = type // overwrite previous vote
+        existing.type = type
       } else {
         this.votes.push({
           id: this.nextIds.vote++,
