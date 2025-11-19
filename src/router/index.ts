@@ -6,7 +6,7 @@ const HomeView        = () => import("@/views/HomeView.vue");
 const PostdetailView  = () => import("@/views/PostdetailView.vue");
 const AddPostView     = () => import("@/views/AddPostView.vue");
 const LoginView       = () => import("@/views/LoginView.vue");
-const SignupView      = () => import("@/views/Signupview.vue");
+const SignupView      = () => import("@/views/SignupView.vue");
 const ProfileView     = () => import("@/views/ProfileView.vue");
 
 const routes = [
