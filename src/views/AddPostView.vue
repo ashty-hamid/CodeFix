@@ -84,7 +84,6 @@
     </section>
   </DefaultLayout>
 </template>
-
 <script setup lang="ts">
 import DefaultLayout from '@/components/layouts/DefaultLayout.vue'
 import { ref } from 'vue'
@@ -124,10 +123,9 @@ function submit() {
     title: title.value.trim(),
     body: body.value.trim(),
     tagNames,
-    authorId: auth.user!.id,
   })
 
-  // redirect to the post page
-  router.push(`/post/${newPostId}`)
+  // go to profile (you can still open the post from there)
+  router.push('/profile')
 }
 </script>
