@@ -5,8 +5,8 @@
     <div class="text-2xl">LOGO</div>
     <nav class="">Hello from header navigation</nav>
     <div class="flex items-center gap-4">
-      <RouterLink to="/login" class="nav-link">Login</RouterLink>
-      <RouterLink :to="{ name: 'Signup' }" class="nav-link">Signup</RouterLink>
+      <RouterLink to="/login" class="nav-link">{{ $t('common.login') }}</RouterLink>
+      <RouterLink :to="{ name: 'Signup' }" class="nav-link">{{ $t('common.register') }}</RouterLink>
     </div>
   </header>
 </template>

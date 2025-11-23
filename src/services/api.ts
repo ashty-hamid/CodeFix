@@ -3,7 +3,7 @@ import type { AxiosInstance, AxiosError } from 'axios';
 
 // Create axios instance with base configuration
 const apiClient: AxiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'https://api.example.com',
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001',
   timeout: 10000, // 10 seconds
   headers: {
     'Content-Type': 'application/json',
@@ -40,7 +40,7 @@ apiClient.interceptors.response.use(
           console.error('Unauthorized - Please login again');
           break;
         case 404:
-          console.error('Resource not found');
+          console.error('Resource not found:', error.config?.url);
           break;
         case 500:
           console.error('Server error - Please try again later');

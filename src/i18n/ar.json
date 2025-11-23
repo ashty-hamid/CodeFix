@@ -1,0 +1,124 @@
+{
+  "common": {
+    "home": "الرئيسية",
+    "addPost": "إضافة منشور",
+    "profile": "الملف الشخصي",
+    "login": "تسجيل الدخول",
+    "register": "التسجيل",
+    "logout": "تسجيل الخروج",
+    "loginRegister": "تسجيل الدخول / التسجيل",
+    "search": "البحث في المنشورات، العلامات...",
+    "user": "المستخدم",
+    "unknown": "غير معروف",
+    "cancel": "إلغاء",
+    "submit": "إرسال",
+    "create": "إنشاء",
+    "signIn": "تسجيل الدخول",
+    "signUp": "إنشاء حساب",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "fullName": "الاسم الكامل",
+    "username": "اسم المستخدم",
+    "confirmPassword": "تأكيد كلمة المرور",
+    "title": "العنوان",
+    "description": "الوصف",
+    "tags": "العلامات",
+    "allTags": "جميع العلامات",
+    "filterByTag": "تصفية حسب العلامة:",
+    "postedBy": "نشر بواسطة",
+    "answers": "الإجابات",
+    "noAnswers": "لا توجد إجابات بعد.",
+    "addAnswer": "إضافة إجابة",
+    "writeAnswer": "اكتب إجابتك...",
+    "submitAnswer": "إرسال الإجابة",
+    "please": "من فضلك",
+    "logIn": "سجل الدخول",
+    "toWriteAnswer": "لكتابة إجابة.",
+    "postNotFound": "المنشور غير موجود.",
+    "required": "*",
+    "posts": "المنشورات",
+    "bestAnswers": "أفضل الإجابات",
+    "noPostsYet": "لا توجد منشورات بعد",
+    "createFirstPost": "إنشاء أول منشور لك",
+    "yourPosts": "منشوراتك",
+    "shareFirstError": "شارك أول خطأ برمجي لك واحصل على المساعدة من المجتمع"
+  },
+  "navbar": {
+    "brand": "CodeFix",
+    "searchPlaceholder": "البحث في المنشورات، العلامات...",
+    "searchAriaLabel": "بحث"
+  },
+  "footer": {
+    "aboutTitle": "حول CodeFix",
+    "aboutDescription": "منصة مجتمعية للمبرمجين لمشاركة أخطاء البرمجة والحصول على المساعدة في إصلاحها. تواصل مع المطورين حول العالم وحل المشاكل معًا.",
+    "quickLinks": "روابط سريعة",
+    "supportUs": "ادعمنا",
+    "contact": "اتصل بنا",
+    "email": "البريد الإلكتروني: support{'@'}codefix.dev",
+    "github": "GitHub: github.com/codefix",
+    "copyright": "© 2025 CodeFix — جميع الحقوق محفوظة."
+  },
+  "home": {
+    "title": "منشورات الأخيرة",
+    "subtitle": "ابحث عن حلول لمشاكل البرمجة أو ساعد الآخرين في حل مشاكلهم."
+  },
+  "login": {
+    "welcomeBack": "مرحباً بعودتك",
+    "signInToAccount": "قم بتسجيل الدخول إلى حسابك",
+    "enterEmail": "أدخل بريدك الإلكتروني",
+    "enterPassword": "أدخل كلمة المرور",
+    "dontHaveAccount": "ليس لديك حساب؟",
+    "signUpLink": "إنشاء حساب"
+  },
+  "signup": {
+    "joinCodeFix": "انضم إلى CodeFix",
+    "createAccount": "أنشئ حسابًا للبدء",
+    "enterFullName": "أدخل اسمك الكامل",
+    "chooseUsername": "اختر اسم مستخدم",
+    "enterEmail": "أدخل بريدك الإلكتروني",
+    "enterPassword": "أدخل كلمة المرور",
+    "confirmPassword": "أكد كلمة المرور",
+    "createAccountButton": "إنشاء حساب",
+    "alreadyHaveAccount": "هل لديك حساب بالفعل؟",
+    "signInLink": "تسجيل الدخول",
+    "fillAllFields": "يرجى ملء جميع الحقول.",
+    "passwordsDoNotMatch": "كلمات المرور غير متطابقة."
+  },
+  "addPost": {
+    "shareError": "شارك خطأك البرمجي",
+    "getHelp": "احصل على المساعدة من المجتمع بمشاركة مشكلة البرمجة الخاصة بك.",
+    "loginRequired": "تسجيل الدخول مطلوب",
+    "mustBeLoggedIn": "يجب أن تكون مسجلاً الدخول لإنشاء منشور جديد.",
+    "briefDescription": "وصف موجز لخطأ البرمجة الخاص بك",
+    "describeError": "صف خطأ البرمجة الخاص بك بالتفصيل.",
+    "tagsCommaSeparated": "العلامات (مفصولة بفواصل)",
+    "tagsExample": "مثال: javascript, vue, typescript",
+    "createPost": "إنشاء منشور"
+  },
+  "postDetail": {
+    "answersCount": "الإجابات ({count})",
+    "authorDate": "{author} • {date}"
+  },
+  "profile": {
+    "addNewPost": "إضافة منشور جديد",
+    "postsCount": "المنشورات",
+    "answersCount": "الإجابات",
+    "bestAnswersCount": "أفضل الإجابات"
+  },
+  "support": {
+    "title": "ادعم CodeFix",
+    "description": "CodeFix هي منصة مجتمعية مجانية تم إنشاؤها لمساعدة المطورين على حل مشاكل البرمجة ومشاركة المعرفة ودعم بعضهم البعض. إذا كنت تقدر عملنا وترغب في مساعدتنا في الحفاظ على استمرارية المنصة، يمكنك دعمنا من خلال FIB.",
+    "donationDetails": "تفاصيل التبرع عبر FIB",
+    "bank": "البنك:",
+    "bankName": "بنك العراق السريع (FIB)",
+    "accountName": "اسم الحساب:",
+    "accountNameValue": "فريق CodeFix",
+    "fibNumber": "رقم FIB:",
+    "fibNumberValue": "07xx-xxxxxxx",
+    "donationNote": "أي مبلغ، كبير أو صغير، يساعدنا في تغطية الاستضافة والتطوير وميزات المجتمع المستقبلية.",
+    "qrCodePlaceholder": "رمز QR هنا",
+    "addQrLater": "(إضافة رمز QR الفعلي لاحقًا)",
+    "thankYou": "شكرًا لدعمك CodeFix ومساعدتنا على النمو. ❤️"
+  }
+}
+

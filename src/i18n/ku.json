@@ -1,0 +1,124 @@
+{
+  "common": {
+    "home": "سەرەکی",
+    "addPost": "پۆست زیاد بکە",
+    "profile": "پرۆفایل",
+    "login": "چوونەژوورەوە",
+    "register": "تۆماربوون",
+    "logout": "دەرچوون",
+    "loginRegister": "چوونەژوورەوە / تۆماربوون",
+    "search": "گەڕان لە پۆستەکان، تاگەکان...",
+    "user": "بەکارهێنەر",
+    "unknown": "نەناسراو",
+    "cancel": "هەڵوەشاندن",
+    "submit": "ناردن",
+    "create": "دروستکردن",
+    "signIn": "چوونەژوورەوە",
+    "signUp": "هەژمار دروست بکە",
+    "email": "ئیمەیڵ",
+    "password": "وشەی نهێنی",
+    "fullName": "ناوی تەواو",
+    "username": "ناوی بەکارهێنەر",
+    "confirmPassword": "پشتڕاستکردنەوەی وشەی نهێنی",
+    "title": "ناونیشان",
+    "description": "وەسف",
+    "tags": "تاگەکان",
+    "allTags": "هەموو تاگەکان",
+    "filterByTag": "فلتەرکردن بەپێی تاگ:",
+    "postedBy": "نێشراوە لەلایەن",
+    "answers": "وەڵامەکان",
+    "noAnswers": "هیچ وەڵامێک نییە هێشتا.",
+    "addAnswer": "وەڵام زیاد بکە",
+    "writeAnswer": "وەڵامەکەت بنووسە...",
+    "submitAnswer": "ناردنی وەڵام",
+    "please": "تکایە",
+    "logIn": "چوونەژوورەوە",
+    "toWriteAnswer": "بۆ نووسینی وەڵام.",
+    "postNotFound": "پۆستەکە نەدۆزرایەوە.",
+    "required": "*",
+    "posts": "پۆستەکان",
+    "bestAnswers": "باشترین وەڵامەکان",
+    "noPostsYet": "هیچ پۆستێک نییە هێشتا",
+    "createFirstPost": "یەکەم پۆستت دروست بکە",
+    "yourPosts": "پۆستەکانت",
+    "shareFirstError": "یەکەم هەڵەی کۆدکردنت هاوبەش بکە و یارمەتی لە کۆمەڵگا وەربگرە"
+  },
+  "navbar": {
+    "brand": "CodeFix",
+    "searchPlaceholder": "گەڕان لە پۆستەکان، تاگەکان...",
+    "searchAriaLabel": "گەڕان"
+  },
+  "footer": {
+    "aboutTitle": "دەربارەی CodeFix",
+    "aboutDescription": "پلاتفۆرمێکی کۆمەڵایەتی بۆ پرۆگرامەرەکان بۆ هاوبەشکردنی هەڵەکانی کۆدکردن و یارمەتی وەرگرتن لە چارەسەرکردنیان. پەیوەندی بە گەشەپێدەران لە هەموو جیهاندا بگرە و کێشەکان بە یەکەوە چارەسەر بکە.",
+    "quickLinks": "بەستەرە خێراکان",
+    "supportUs": "پشتگیری لێمان بکە",
+    "contact": "پەیوەندی",
+    "email": "ئیمەیڵ: support{'@'}codefix.dev",
+    "github": "GitHub: github.com/codefix",
+    "copyright": "© 2025 CodeFix — هەموو مافێک پارێزراوە."
+  },
+  "home": {
+    "title": "کۆتا پۆستەکان",
+    "subtitle": "چارەسەر بۆ کێشەکانی کۆدکردن بدۆزەوە یان یارمەتی کەسانی تر بدە لە چارەسەرکردنی کێشەکانیان."
+  },
+  "login": {
+    "welcomeBack": "بەخێربێیت",
+    "signInToAccount": "چوونەژوورەوە بۆ هەژمارەکەت",
+    "enterEmail": "ئیمەیڵەکەت بنووسە",
+    "enterPassword": "وشەی نهێنیەکەت بنووسە",
+    "dontHaveAccount": "هەژمارت نییە؟",
+    "signUpLink": "هەژمار دروست بکە"
+  },
+  "signup": {
+    "joinCodeFix": "بەشداری CodeFix بکە",
+    "createAccount": "هەژمارێک دروست بکە بۆ دەستپێکردن",
+    "enterFullName": "ناوی تەواوەکەت بنووسە",
+    "chooseUsername": "ناوی بەکارهێنەرێک هەڵبژێرە",
+    "enterEmail": "ئیمەیڵەکەت بنووسە",
+    "enterPassword": "وشەی نهێنیەکەت بنووسە",
+    "confirmPassword": "وشەی نهێنیەکەت پشتڕاست بکەوە",
+    "createAccountButton": "هەژمار دروست بکە",
+    "alreadyHaveAccount": "پێشتر هەژمارت هەیە؟",
+    "signInLink": "چوونەژوورەوە",
+    "fillAllFields": "تکایە هەموو خانەکان پڕ بکەوە.",
+    "passwordsDoNotMatch": "وشەکانی نهێنی یەکسان نین."
+  },
+  "addPost": {
+    "shareError": "هەڵەی کۆدکردنەکەت هاوبەش بکە",
+    "getHelp": "یارمەتی لە کۆمەڵگا وەربگرە بە هاوبەشکردنی کێشەی کۆدکردنەکەت.",
+    "loginRequired": "چوونەژوورەوە پێویستە",
+    "mustBeLoggedIn": "پێویستە چوونەژوورەوە بیت بۆ دروستکردنی پۆستێکی نوێ.",
+    "briefDescription": "وەسفێکی کورت لە هەڵەی کۆدکردنەکەت",
+    "describeError": "هەڵەی کۆدکردنەکەت بە وردەکاری وەسف بکە.",
+    "tagsCommaSeparated": "تاگەکان (بە کۆما جیاکراوەتەوە)",
+    "tagsExample": "وەک: javascript, vue, typescript",
+    "createPost": "پۆست دروست بکە"
+  },
+  "postDetail": {
+    "answersCount": "وەڵامەکان ({count})",
+    "authorDate": "{author} • {date}"
+  },
+  "profile": {
+    "addNewPost": "پۆستێکی نوێ زیاد بکە",
+    "postsCount": "پۆستەکان",
+    "answersCount": "وەڵامەکان",
+    "bestAnswersCount": "باشترین وەڵامەکان"
+  },
+  "support": {
+    "title": "پشتگیری لە CodeFix بکە",
+    "description": "CodeFix پلاتفۆرمێکی کۆمەڵایەتی بێبەرامبەرە کە دروست کراوە بۆ یارمەتیدانی گەشەپێدەران لە چارەسەرکردنی کێشەکانی کۆدکردن، هاوبەشکردنی زانین و پشتگیری لە یەکتر. ئەگەر کارەکەمان بەرز دەنرخێیت و دەتەوێت یارمەتیمان بدەیت بۆ بەردەوامبوونی پلاتفۆرمەکە، دەتوانیت لە ڕێگەی FIB پشتگیریمان بکەیت.",
+    "donationDetails": "وردەکاریەکانی بەخشین بە FIB",
+    "bank": "بانک:",
+    "bankName": "بانکی خێرای عێراق (FIB)",
+    "accountName": "ناوی هەژمار:",
+    "accountNameValue": "تیمی CodeFix",
+    "fibNumber": "ژمارەی FIB:",
+    "fibNumberValue": "07xx-xxxxxxx",
+    "donationNote": "هەر بڕێک، گەورە یان بچووک، یارمەتیمان دەدات لە دابینکردنی هۆستینگ، گەشەپێدان و تایبەتمەندیەکانی کۆمەڵگای داهاتوو.",
+    "qrCodePlaceholder": "کۆدی QR لێرە",
+    "addQrLater": "(کۆدی QRی ڕاستەقینە دواتر زیاد دەکرێت)",
+    "thankYou": "سوپاس بۆ پشتگیریت لە CodeFix و یارمەتیت بۆ گەشەکردنمان. ❤️"
+  }
+}
+

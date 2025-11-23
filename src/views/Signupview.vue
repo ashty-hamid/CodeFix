@@ -5,57 +5,57 @@
         <!-- Avatar -->
         <div class="avatar-circle">C</div>
 
-        <h1 class="title">Join CodeFix</h1>
-        <p class="subtitle">Create an account to get started</p>
+        <h1 class="title">{{ $t('signup.joinCodeFix') }}</h1>
+        <p class="subtitle">{{ $t('signup.createAccount') }}</p>
 
         <!-- FORM -->
         <form class="form-grid" @submit.prevent="handleSignup">
           <!-- Full Name -->
-          <label>Full Name *</label>
+          <label>{{ $t('common.fullName') }} {{ $t('common.required') }}</label>
           <input
             v-model="fullName"
             type="text"
-            placeholder="Enter your full name"
+            :placeholder="$t('signup.enterFullName')"
             class="input-field"
           />
 
           <!-- Username -->
-          <label>Username *</label>
+          <label>{{ $t('common.username') }} {{ $t('common.required') }}</label>
           <input
             v-model="username"
             type="text"
-            placeholder="Choose a username"
+            :placeholder="$t('signup.chooseUsername')"
             class="input-field"
           />
 
           <!-- Email -->
-          <label>Email *</label>
-          <input v-model="email" type="email" placeholder="Enter your email" class="input-field" />
+          <label>{{ $t('common.email') }} {{ $t('common.required') }}</label>
+          <input v-model="email" type="email" :placeholder="$t('signup.enterEmail')" class="input-field" />
 
           <!-- Password -->
-          <label>Password *</label>
+          <label>{{ $t('common.password') }} {{ $t('common.required') }}</label>
           <input
             v-model="password"
             type="password"
-            placeholder="Enter your password"
+            :placeholder="$t('signup.enterPassword')"
             class="input-field"
           />
 
           <!-- Confirm Password -->
-          <label>Confirm Password *</label>
+          <label>{{ $t('common.confirmPassword') }} {{ $t('common.required') }}</label>
           <input
             v-model="confirmPassword"
             type="password"
-            placeholder="Confirm your password"
+            :placeholder="$t('signup.confirmPassword')"
             class="input-field"
           />
 
-          <button class="cf-btn cf-btn-primary submit-btn">Create Account</button>
+          <button class="cf-btn cf-btn-primary submit-btn">{{ $t('signup.createAccountButton') }}</button>
         </form>
 
         <p class="auth-switch">
-          Already have an account?
-          <RouterLink to="/login">Sign in</RouterLink>
+          {{ $t('signup.alreadyHaveAccount') }}
+          <RouterLink to="/login">{{ $t('signup.signInLink') }}</RouterLink>
         </p>
       </div>
     </section>
@@ -65,6 +65,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/authStore'
 import DefaultLayout from '@/components/layouts/DefaultLayout.vue'
 
@@ -77,22 +78,32 @@ const confirmPassword = ref('')
 const auth = useAuthStore()
 const router = useRouter()
 
-function handleSignup() {
+const { t } = useI18n()
+
+async function handleSignup() {
   if (!fullName.value || !username.value || !email.value || !password.value) {
-    alert('Please fill all fields.')
+    alert(t('signup.fillAllFields'))
     return
   }
 
   if (password.value !== confirmPassword.value) {
-    alert('Passwords do not match.')
+    alert(t('signup.passwordsDoNotMatch'))
     return
   }
 
-  // create user in auth store
-  auth.signup({ name: fullName.value, email: email.value, password: password.value })
+  try {
+    // create user via API
+    await auth.signup({ 
+      username: username.value || fullName.value, 
+      email: email.value, 
+      password: password.value 
+    })
 
-  // redirect to home after success
-  router.push('/home')
+    // redirect to home after success
+    router.push('/home')
+  } catch (e: any) {
+    alert(auth.error || e.message || 'Registration failed')
+  }
 }
 </script>
 

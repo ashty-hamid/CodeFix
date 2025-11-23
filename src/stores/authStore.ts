@@ -1,81 +1,94 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { usePostsStore } from '@/stores/postsStore'
-import sample from '@/data/sampleData.json'
-
-interface User {
-  id: number
-  name: string
-  email: string
-  password: string
-  postsCount: number
-  answersCount: number
-  bestAnswersCount: number
-}
+import { authService } from '@/services/authService'
+import type { User } from '@/types/api.types'
 
 export const useAuthStore = defineStore('auth', () => {
   const user = ref<User | null>(null)
+  const isLoading = ref(false)
+  const error = ref<string | null>(null)
 
-  // local mock users (only newly registered account users)
-  const users = ref<User[]>([])
-
-  // ❗ start AFTER the sample users to avoid id collisions (banaz, sara, ...)
-  let nextId = (sample.users?.length || 0) + 1
+  // Initialize: Check if user is already logged in via token
+  async function init() {
+    if (authService.isAuthenticated()) {
+      try {
+        // Verify token by fetching current user
+        const currentUser = await authService.getCurrentUser()
+        user.value = currentUser
+      } catch (e: any) {
+        // Token might be invalid or expired, clear it
+        console.warn('Failed to restore user session:', e.response?.status, e.message)
+        authService.logout()
+        user.value = null
+      }
+    }
+  }
 
   /** SIGN UP */
-  function signup(data: { name: string; email: string; password: string }) {
-    const exists = users.value.find((u) => u.email === data.email)
-    if (exists) throw new Error('Email already registered')
-
-    const newUser: User = {
-      id: nextId++,
-      name: data.name,
-      email: data.email,
-      password: data.password,
-      postsCount: 0,
-      answersCount: 0,
-      bestAnswersCount: 0,
+  async function signup(data: { username: string; email: string; password: string }) {
+    isLoading.value = true
+    error.value = null
+    try {
+      const response = await authService.register({
+        username: data.username,
+        email: data.email,
+        password: data.password,
+      })
+      user.value = response.user
+      return response
+    } catch (e: any) {
+      error.value = e.response?.data?.message || e.message || 'Registration failed'
+      throw e
+    } finally {
+      isLoading.value = false
     }
-
-    // save new user in auth store
-    users.value.push(newUser)
-    user.value = newUser
-
-    // 🔥 Sync new user into postsStore.users so posts show correct author
-    const postsStore = usePostsStore()
-    postsStore.users.push({
-      id: newUser.id,
-      username: newUser.name, // simple username (you can change later)
-      email: newUser.email,
-      profileImageUrl: '',
-      role: 'user',
-      password: '',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    })
   }
-/** LOGIN */
-  function login(data: { email: string; password: string }) {
-    const found = users.value.find((u) => u.email === data.email && u.password === data.password)
-    if (!found) throw new Error('Invalid email or password')
 
-    user.value = found
+  /** LOGIN */
+  async function login(data: { email: string; password: string }) {
+    isLoading.value = true
+    error.value = null
+    try {
+      const response = await authService.login({
+        email: data.email,
+        password: data.password,
+      })
+      user.value = response.user
+      return response
+    } catch (e: any) {
+      error.value = e.response?.data?.message || e.message || 'Login failed'
+      throw e
+    } finally {
+      isLoading.value = false
+    }
   }
 
   /** LOGOUT */
   function logout() {
+    authService.logout()
     user.value = null
+    error.value = null
+  }
+
+  /** SET USER */
+  function setUser(userData: User | null) {
+    user.value = userData
   }
 
   /** BOOLEAN */
-  const isLoggedIn = computed(() => user.value !== null)
+  const isLoggedIn = computed(() => {
+    return !!user.value && authService.isAuthenticated()
+  })
 
   return {
     user,
-    users,
+    isLoading,
+    error,
     signup,
     login,
     logout,
+    setUser,
+    init,
     isLoggedIn,
   }
 })

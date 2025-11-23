@@ -1,0 +1,124 @@
+{
+  "common": {
+    "home": "Home",
+    "addPost": "Add Post",
+    "profile": "Profile",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "loginRegister": "Login / Register",
+    "search": "Search posts, tags...",
+    "user": "User",
+    "unknown": "Unknown",
+    "cancel": "Cancel",
+    "submit": "Submit",
+    "create": "Create",
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "email": "Email",
+    "password": "Password",
+    "fullName": "Full Name",
+    "username": "Username",
+    "confirmPassword": "Confirm Password",
+    "title": "Title",
+    "description": "Description",
+    "tags": "Tags",
+    "allTags": "All Tags",
+    "filterByTag": "Filter by tag:",
+    "postedBy": "Posted by",
+    "answers": "Answers",
+    "noAnswers": "No answers yet.",
+    "addAnswer": "Add Answer",
+    "writeAnswer": "Write your answer...",
+    "submitAnswer": "Submit Answer",
+    "please": "Please",
+    "logIn": "log in",
+    "toWriteAnswer": "to write an answer.",
+    "postNotFound": "Post not found.",
+    "required": "*",
+    "posts": "Posts",
+    "bestAnswers": "Best Answers",
+    "noPostsYet": "No posts yet",
+    "createFirstPost": "Create Your First Post",
+    "yourPosts": "Your Posts",
+    "shareFirstError": "Share your first coding error and get help from the community"
+  },
+  "navbar": {
+    "brand": "CodeFix",
+    "searchPlaceholder": "Search posts, tags...",
+    "searchAriaLabel": "Search"
+  },
+  "footer": {
+    "aboutTitle": "About CodeFix",
+    "aboutDescription": "A community platform for programmers to share coding errors and get help fixing them. Connect with developers worldwide and solve problems together.",
+    "quickLinks": "Quick Links",
+    "supportUs": "Support Us",
+    "contact": "Contact",
+    "email": "Email: support{'@'}codefix.dev",
+    "github": "GitHub: github.com/codefix",
+    "copyright": "© 2025 CodeFix — All rights reserved."
+  },
+  "home": {
+    "title": "Recent Posts",
+    "subtitle": "Find solutions to coding problems or help others with theirs."
+  },
+  "login": {
+    "welcomeBack": "Welcome Back",
+    "signInToAccount": "Sign in to your account",
+    "enterEmail": "Enter your email",
+    "enterPassword": "Enter your password",
+    "dontHaveAccount": "Don't have an account?",
+    "signUpLink": "Sign up"
+  },
+  "signup": {
+    "joinCodeFix": "Join CodeFix",
+    "createAccount": "Create an account to get started",
+    "enterFullName": "Enter your full name",
+    "chooseUsername": "Choose a username",
+    "enterEmail": "Enter your email",
+    "enterPassword": "Enter your password",
+    "confirmPassword": "Confirm your password",
+    "createAccountButton": "Create Account",
+    "alreadyHaveAccount": "Already have an account?",
+    "signInLink": "Sign in",
+    "fillAllFields": "Please fill all fields.",
+    "passwordsDoNotMatch": "Passwords do not match."
+  },
+  "addPost": {
+    "shareError": "Share Your Coding Error",
+    "getHelp": "Get help from the community by sharing your coding problem.",
+    "loginRequired": "Login Required",
+    "mustBeLoggedIn": "You must be logged in to create a new post.",
+    "briefDescription": "Brief description of your coding error",
+    "describeError": "Describe your coding error in detail.",
+    "tagsCommaSeparated": "Tags (comma separated)",
+    "tagsExample": "e.g. javascript, vue, typescript",
+    "createPost": "Create Post"
+  },
+  "postDetail": {
+    "answersCount": "Answers ({count})",
+    "authorDate": "{author} • {date}"
+  },
+  "profile": {
+    "addNewPost": "Add New Post",
+    "postsCount": "Posts",
+    "answersCount": "Answers",
+    "bestAnswersCount": "Best Answers"
+  },
+  "support": {
+    "title": "Support CodeFix",
+    "description": "CodeFix is a free community platform created to help developers solve coding problems, share knowledge, and support each other. If you appreciate our work and want to help us keep the platform running, you can support us through FIB.",
+    "donationDetails": "FIB Donation Details",
+    "bank": "Bank:",
+    "bankName": "Fast Iraq Bank (FIB)",
+    "accountName": "Account Name:",
+    "accountNameValue": "CodeFix Team",
+    "fibNumber": "FIB Number:",
+    "fibNumberValue": "07xx-xxxxxxx",
+    "donationNote": "Any amount, big or small, helps us cover hosting, development and future community features.",
+    "qrCodePlaceholder": "QR CODE HERE",
+    "addQrLater": "(Add actual QR later)",
+    "thankYou": "Thank you for supporting CodeFix and helping us grow. ❤️"
+  }
+}
+

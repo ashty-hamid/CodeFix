@@ -7,7 +7,7 @@
           <div class="avatar">{{ initials }}</div>
 
           <div>
-            <h2 class="name">{{ auth.user?.name }}</h2>
+            <h2 class="name">{{ auth.user?.username }}</h2>
             <p class="username">@{{ usernameDisplay }}</p>
           </div>
         </div>
@@ -16,38 +16,38 @@
         <div class="stats-row">
           <div class="stat-box">
             <h3>{{ postsCount }}</h3>
-            <p>Posts</p>
+            <p>{{ $t('profile.postsCount') }}</p>
           </div>
           <div class="stat-box">
             <h3>{{ answersCount }}</h3>
-            <p>Answers</p>
+            <p>{{ $t('profile.answersCount') }}</p>
           </div>
           <div class="stat-box">
             <h3>{{ bestAnswersCount }}</h3>
-            <p>Best Answers</p>
+            <p>{{ $t('profile.bestAnswersCount') }}</p>
           </div>
         </div>
 
         <!-- Add New Post Button -->
         <div class="btn-row">
           <RouterLink to="/add">
-            <button class="cf-btn cf-btn-primary">Add New Post</button>
+            <button class="cf-btn cf-btn-primary">{{ $t('profile.addNewPost') }}</button>
           </RouterLink>
         </div>
       </div>
 
       <!-- USER POSTS SECTION -->
       <div class="posts-section">
-        <h3>Your Posts ({{ myPosts.length }})</h3>
+        <h3>{{ $t('common.yourPosts') }} ({{ myPosts.length }})</h3>
 
         <!-- No posts yet -->
         <div v-if="myPosts.length === 0" class="empty-box">
           <div class="empty-avatar">👤</div>
-          <p class="no-posts-title">No posts yet</p>
-          <p class="no-posts-sub">Share your first coding error and get help from the community</p>
+          <p class="no-posts-title">{{ $t('common.noPostsYet') }}</p>
+          <p class="no-posts-sub">{{ $t('common.shareFirstError') }}</p>
 
           <RouterLink to="/add">
-            <button class="cf-btn cf-btn-primary">Create Your First Post</button>
+            <button class="cf-btn cf-btn-primary">{{ $t('common.createFirstPost') }}</button>
           </RouterLink>
         </div>
 
@@ -64,18 +64,18 @@
             </header>
 
             <p class="post-excerpt">
-              {{ post.excerpt }}
+              {{ post.excerpt || post.body?.slice(0, 150) }}
             </p>
 
             <footer class="post-footer">
               <div class="tags">
-                <span v-for="t in post.tags" :key="t.id" class="tag-pill">
+                <span v-for="t in (post.tags || []).filter(t => t && t.id && t.name)" :key="t.id" class="tag-pill">
                   {{ t.name }}
                 </span>
               </div>
 
               <div class="meta-right">
-                <span class="meta-item">💬 {{ post.answersCount }}</span>
+                <span class="meta-item">💬 {{ post.commentsCount || 0 }}</span>
               </div>
             </footer>
           </article>
@@ -86,7 +86,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useAuthStore } from '@/stores/authStore'
 import { usePostsStore } from '@/stores/postsStore'
 import DefaultLayout from '@/components/layouts/DefaultLayout.vue'
@@ -94,14 +94,31 @@ import DefaultLayout from '@/components/layouts/DefaultLayout.vue'
 const auth = useAuthStore()
 const postsStore = usePostsStore()
 
-const initials = computed(() => (auth.user?.name ? auth.user.name.slice(0, 1).toUpperCase() : 'U'))
+// Fetch user's posts on mount
+onMounted(async () => {
+  if (auth.user) {
+    try {
+      await postsStore.fetchPosts({ authorId: auth.user.id })
+    } catch (e) {
+      console.error('Failed to fetch user posts:', e)
+    }
+  }
+})
 
-const usernameDisplay = computed(() => (auth.user?.name ? auth.user.name.replace(' ', '') : 'user'))
+const initials = computed(() => (auth.user?.username ? auth.user.username.slice(0, 1).toUpperCase() : 'U'))
 
-// stats
-const postsCount = computed(() => auth.user?.postsCount ?? 0)
-const answersCount = computed(() => auth.user?.answersCount ?? 0)
-const bestAnswersCount = computed(() => auth.user?.bestAnswersCount ?? 0)
+const usernameDisplay = computed(() => auth.user?.username || 'user')
+
+// stats - these will need to be calculated from posts/comments
+const postsCount = computed(() => {
+  if (!auth.user) return 0
+  return postsStore.posts.filter(p => p.author?.id === auth.user!.id).length
+})
+const answersCount = computed(() => {
+  if (!auth.user) return 0
+  return postsStore.comments.filter(c => c.author?.id === auth.user!.id).length
+})
+const bestAnswersCount = computed(() => 0) // Not implemented yet
 
 // current user's posts with meta (tags, answersCount, etc.)
 const myPosts = computed(() => {

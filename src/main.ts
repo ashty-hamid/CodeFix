@@ -6,14 +6,24 @@ import { createPinia } from 'pinia'
 
 import App from './App.vue'
 import router from './router'
+import i18n from './i18n/index'
+import { useAuthStore } from './stores/authStore'
 
 const app = createApp(App)
 
 // State management
-app.use(createPinia())
+const pinia = createPinia()
+app.use(pinia)
+
+// Initialize auth store (restore user from token)
+const authStore = useAuthStore()
+authStore.init()
 
 // Routing
 app.use(router)
+
+// Internationalization
+app.use(i18n)
 
 // Mount
 app.mount('#app')

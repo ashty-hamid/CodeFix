@@ -19,40 +19,40 @@
         C
       </div>
 
-      <h2 style="margin: 0 0 8px">Welcome Back</h2>
-      <p class="cf-muted" style="margin: 0">Sign in to your account</p>
+      <h2 style="margin: 0 0 8px">{{ $t('login.welcomeBack') }}</h2>
+      <p class="cf-muted" style="margin: 0">{{ $t('login.signInToAccount') }}</p>
     </div>
 
     <!-- FORM -->
     <form @submit.prevent="submit">
-      <label class="cf-label">Email *</label>
+      <label class="cf-label">{{ $t('common.email') }} {{ $t('common.required') }}</label>
       <input
         type="email"
         v-model="email"
         class="cf-input"
-        placeholder="Enter your email"
+        :placeholder="$t('login.enterEmail')"
         required
       />
 
-      <label class="cf-label" style="margin-top: 16px">Password *</label>
+      <label class="cf-label" style="margin-top: 16px">{{ $t('common.password') }} {{ $t('common.required') }}</label>
       <input
         type="password"
         v-model="password"
         class="cf-input"
-        placeholder="Enter your password"
+        :placeholder="$t('login.enterPassword')"
         required
       />
 
       <p v-if="error" class="error-box">{{ error }}</p>
 
       <button type="submit" class="cf-btn cf-btn-primary" style="width: 100%; margin-top: 20px;">
-        Sign In
+        {{ $t('common.signIn') }}
       </button>
     </form>
 
     <p style="margin-top: 16px; text-align: center;" class="cf-muted">
-      Don't have an account?
-      <RouterLink to="/signup" style="color: var(--brand);">Sign up</RouterLink>
+      {{ $t('login.dontHaveAccount') }}
+      <RouterLink to="/signup" style="color: var(--brand);">{{ $t('login.signUpLink') }}</RouterLink>
     </p>
   </SimpleLayout>
 </template>
@@ -71,14 +71,15 @@ const email = ref("");
 const password = ref("");
 const error = ref("");
 
-function submit() {
+async function submit() {
   try {
-    auth.login({ email: email.value, password: password.value });
+    error.value = '';
+    await auth.login({ email: email.value, password: password.value });
 
     const redirect = (route.query.redirect as string) || "/home";
     router.push(redirect);
   } catch (e: any) {
-    error.value = e.message;
+    error.value = auth.error || e.message || 'Login failed';
   }
 }
 </script>

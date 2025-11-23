@@ -9,5 +9,6 @@ export { commentService } from './commentService';
 export { authService } from './authService';
 export { userService } from './userService';
 export { productService } from './productService';
+export { tagService } from './tagService';
 export { default as apiClient } from './api';
 

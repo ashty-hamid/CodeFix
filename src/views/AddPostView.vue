@@ -1,9 +1,9 @@
 <template>
   <DefaultLayout>
     <section class="cf-container">
-      <h1 style="margin: 0 0 10px">Share Your Coding Error</h1>
+      <h1 style="margin: 0 0 10px">{{ $t('addPost.shareError') }}</h1>
       <p style="color: var(--muted); margin: 0 0 20px">
-        Get help from the community by sharing your coding problem.
+        {{ $t('addPost.getHelp') }}
       </p>
 
       <!-- LOGIN REQUIRED -->
@@ -17,13 +17,13 @@
           text-align: center;
         "
       >
-        <h2 style="margin-bottom: 10px">Login Required</h2>
+        <h2 style="margin-bottom: 10px">{{ $t('addPost.loginRequired') }}</h2>
         <p style="color: var(--muted); margin-bottom: 20px">
-          You must be logged in to create a new post.
+          {{ $t('addPost.mustBeLoggedIn') }}
         </p>
 
         <RouterLink :to="{ name: 'login', query: { redirect: '/add' } }">
-          <button class="cf-btn cf-btn-primary">Log In / Register</button>
+          <button class="cf-btn cf-btn-primary">{{ $t('common.loginRegister') }}</button>
         </RouterLink>
       </div>
 
@@ -39,17 +39,17 @@
         "
       >
         <!-- TITLE -->
-        <label style="font-weight: 500">Title *</label>
+        <label style="font-weight: 500">{{ $t('common.title') }} {{ $t('common.required') }}</label>
         <input
           v-model="title"
           required
           class="cf-search"
           style="display: block; width: 100%; margin: 6px 0 16px"
-          placeholder="Brief description of your coding error"
+          :placeholder="$t('addPost.briefDescription')"
         />
 
         <!-- DESCRIPTION -->
-        <label style="font-weight: 500">Description *</label>
+        <label style="font-weight: 500">{{ $t('common.description') }} {{ $t('common.required') }}</label>
         <textarea
           v-model="body"
           required
@@ -63,22 +63,22 @@
             padding: 12px;
             margin: 6px 0 16px;
           "
-          placeholder="Describe your coding error in detail."
+          :placeholder="$t('addPost.describeError')"
         ></textarea>
 
         <!-- TAGS -->
-        <label style="font-weight: 500">Tags (comma separated)</label>
+        <label style="font-weight: 500">{{ $t('addPost.tagsCommaSeparated') }}</label>
         <input
           v-model="tags"
           class="cf-search"
           style="width: 100%; margin: 6px 0 20px"
-          placeholder="e.g. javascript, vue, typescript"
+          :placeholder="$t('addPost.tagsExample')"
         />
 
         <!-- BUTTONS -->
         <div style="display: flex; gap: 12px">
-          <button type="button" class="cf-btn" @click="resetForm">Cancel</button>
-          <button type="submit" class="cf-btn cf-btn-primary">Create Post</button>
+          <button type="button" class="cf-btn" @click="resetForm">{{ $t('common.cancel') }}</button>
+          <button type="submit" class="cf-btn cf-btn-primary">{{ $t('addPost.createPost') }}</button>
         </div>
       </form>
     </section>
@@ -86,7 +86,7 @@
 </template>
 <script setup lang="ts">
 import DefaultLayout from '@/components/layouts/DefaultLayout.vue'
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { usePostsStore } from '@/stores/postsStore'
 import { useAuthStore } from '@/stores/authStore'
@@ -99,6 +99,13 @@ const title = ref('')
 const body = ref('')
 const tags = ref('')
 
+// Fetch tags on mount to enable tag selection
+onMounted(async () => {
+  if (posts.allTags.length === 0) {
+    await posts.fetchTags()
+  }
+})
+
 // RESET FORM
 function resetForm() {
   title.value = ''
@@ -107,25 +114,32 @@ function resetForm() {
 }
 
 // SUBMIT
-function submit() {
+async function submit() {
   if (!auth.isLoggedIn) {
     return router.push({ name: 'login', query: { redirect: '/add' } })
   }
 
-  // convert "tag1, tag2" → ["tag1", "tag2"]
-  const tagNames = tags.value
-    .split(',')
-    .map((t) => t.trim())
-    .filter((t) => t.length > 0)
+  try {
+    // Parse tag names from comma-separated input
+    const tagNames = tags.value
+      .split(',')
+      .map((t) => t.trim())
+      .filter((t) => t.length > 0)
 
-  // add post
-  const newPostId = posts.addPost({
-    title: title.value.trim(),
-    body: body.value.trim(),
-    tagNames,
-  })
+    // Send tag names directly - server will create tags that don't exist
+    const newPost = await posts.addPost({
+      title: title.value.trim(),
+      body: body.value.trim(),
+      tags: tagNames.length > 0 ? tagNames : undefined,
+    })
 
-  // go to profile (you can still open the post from there)
-  router.push('/profile')
+    // Reset form
+    resetForm()
+
+    // go to the new post
+    router.push(`/post/${newPost.id}`)
+  } catch (e: any) {
+    alert(posts.error || e.message || 'Failed to create post')
+  }
 }
 </script>

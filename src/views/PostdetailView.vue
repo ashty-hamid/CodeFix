@@ -2,7 +2,7 @@
   <DefaultLayout>
     <section class="cf-container">
       <!-- POST NOT FOUND -->
-      <div v-if="!post" style="padding: 20px; color: var(--muted)">Post not found.</div>
+      <div v-if="!post" style="padding: 20px; color: var(--muted)">{{ $t('common.postNotFound') }}</div>
 
       <!-- POST CONTENT -->
       <div v-else>
@@ -24,7 +24,7 @@
 
           <!-- AUTHOR -->
           <div style="margin-top: 6px; color: var(--muted)">
-            Posted by {{ post.author?.username ?? 'Unknown' }}
+            {{ $t('common.postedBy') }} {{ post.author?.username ?? $t('common.unknown') }}
           </div>
 
           <!-- BODY -->
@@ -44,7 +44,7 @@
           <!-- TAGS -->
           <div style="margin-top: 14px; display: flex; gap: 10px; flex-wrap: wrap">
             <span
-              v-for="t in post.tags"
+              v-for="t in (post.tags || []).filter((t: any) => t && t.id && t.name)"
               :key="t.id"
               style="
                 background: #111827;
@@ -61,10 +61,10 @@
         </div>
 
         <!-- ANSWERS SECTION -->
-        <h3 style="margin-bottom: 10px">Answers ({{ post.answers.length }})</h3>
+        <h3 style="margin-bottom: 10px">{{ $t('postDetail.answersCount', { count: post.answers.length }) }}</h3>
 
         <!-- IF NO ANSWERS -->
-        <p v-if="post.answers.length === 0" style="color: var(--muted)">No answers yet.</p>
+        <p v-if="post.answers.length === 0" style="color: var(--muted)">{{ $t('common.noAnswers') }}</p>
 
         <!-- ANSWER LIST -->
         <div
@@ -81,7 +81,7 @@
           <div style="display: flex; justify-content: space-between; align-items: center">
             <!-- LEFT: author + date -->
             <span style="color: var(--muted)">
-              {{ ans.author?.username ?? 'Unknown' }} • {{ formatDate(ans.createdAt) }}
+              {{ $t('postDetail.authorDate', { author: ans.author?.username ?? $t('common.unknown'), date: formatDate(ans.createdAt) }) }}
             </span>
 
             <!-- RIGHT: voting -->
@@ -112,15 +112,15 @@
 
         <!-- ADD ANSWER -->
         <div style="margin-top: 24px">
-          <h3>Add Answer</h3>
+          <h3>{{ $t('common.addAnswer') }}</h3>
 
           <!-- IF NOT LOGGED IN -->
           <p v-if="!auth.isLoggedIn" style="color: var(--muted); margin-top: 6px">
-            Please
+            {{ $t('common.please') }}
             <RouterLink :to="{ name: 'login', query: { redirect: route.fullPath } }"
-              >log in</RouterLink
+              >{{ $t('common.logIn') }}</RouterLink
             >
-            to write an answer.
+            {{ $t('common.toWriteAnswer') }}
           </p>
 
           <!-- ANSWER FORM -->
@@ -128,7 +128,7 @@
             <textarea
               v-model="answerBody"
               rows="5"
-              placeholder="Write your answer..."
+              :placeholder="$t('common.writeAnswer')"
               style="
                 width: 100%;
                 background: #111827;
@@ -139,8 +139,8 @@
               "
             ></textarea>
 
-            <button @click="submitAnswer" class="cf-btn cf-btn-primary" style="margin-top: 10px">
-              Submit Answer
+            <button @click="submitAnswer" class="cf-btn cf-btn-primary" style="margin-top: 10px" :disabled="isLoading">
+              {{ isLoading ? '...' : $t('common.submitAnswer') }}
             </button>
           </div>
         </div>
@@ -150,7 +150,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import DefaultLayout from '@/components/layouts/DefaultLayout.vue'
 import { usePostsStore } from '@/stores/postsStore'
@@ -163,36 +163,60 @@ const auth = useAuthStore()
 
 const postId = Number(route.params.id)
 
-const post = computed(() => store.postById(postId))
+const post = ref<any>(null)
 
 const answerBody = ref('')
+const isLoading = ref(false)
 
-function submitAnswer() {
+// Fetch post on mount
+onMounted(async () => {
+  try {
+    await store.fetchPostById(postId)
+    post.value = store.postById(postId)
+  } catch (e) {
+    console.error('Failed to fetch post:', e)
+  }
+})
+
+async function submitAnswer() {
   if (!auth.isLoggedIn) {
     return router.push({ name: 'login', query: { redirect: route.fullPath } })
   }
 
   if (!answerBody.value.trim()) return
 
-  store.addAnswer({
-    postId,
-    content: answerBody.value.trim(),
-    authorId: auth.user!.id,
-  })
-
-  answerBody.value = ''
+  isLoading.value = true
+  try {
+    await store.addAnswer({
+      postId,
+      content: answerBody.value.trim(),
+    })
+    // Refresh post to get updated comments
+    await store.fetchPostById(postId)
+    post.value = store.postById(postId)
+    answerBody.value = ''
+  } catch (e) {
+    console.error('Failed to submit answer:', e)
+  } finally {
+    isLoading.value = false
+  }
 }
 
-function voteAnswer(commentId: number, type: 'upvote' | 'downvote') {
+async function voteAnswer(commentId: number, type: 'upvote' | 'downvote') {
   if (!auth.isLoggedIn) {
     return router.push({ name: 'login', query: { redirect: route.fullPath } })
   }
 
-  store.voteAnswer({
-    commentId,
-    userId: auth.user!.id,
-    type,
-  })
+  try {
+    await store.voteAnswer({
+      commentId,
+      type,
+    })
+    // Update post to reflect vote changes
+    post.value = store.postById(postId)
+  } catch (e) {
+    console.error('Failed to vote:', e)
+  }
 }
 
 function formatDate(iso: string) {
