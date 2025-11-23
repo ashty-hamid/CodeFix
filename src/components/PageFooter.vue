@@ -15,6 +15,9 @@
           <li><RouterLink to="/home" class="cf-link">Home</RouterLink></li>
           <li><RouterLink to="/add" class="cf-link">Add Post</RouterLink></li>
           <li><RouterLink to="/profile" class="cf-link">Profile</RouterLink></li>
+
+          <!-- NEW DONATION PAGE LINK -->
+          <li><RouterLink to="/support" class="cf-link">Support Us</RouterLink></li>
         </ul>
       </section>
 
