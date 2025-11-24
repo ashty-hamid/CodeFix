@@ -22,6 +22,20 @@ src/
 
 ## Available Services
 
+All services are exported from `src/services/index.ts`:
+
+```typescript
+import { 
+  postService, 
+  commentService, 
+  authService, 
+  userService, 
+  tagService, 
+  productService,
+  apiClient 
+} from '@/services';
+```
+
 ### Auth Service (`authService`)
 
 ```typescript
@@ -43,8 +57,14 @@ const response = await authService.login({
 // Logout
 authService.logout();
 
+// Get current authenticated user
+const currentUser = await authService.getCurrentUser();
+
 // Check authentication status
 const isAuthenticated = authService.isAuthenticated();
+
+// Logout (clears token and user data)
+authService.logout();
 ```
 
 ### Post Service (`postService`)
@@ -58,6 +78,7 @@ const result = await postService.getPosts({
   limit: 10,
   search: 'nestjs',
   tagId: 5,
+  authorId: 1,
   sortBy: 'createdAt',
   order: 'DESC'
 });
@@ -69,16 +90,24 @@ const post = await postService.getPostById(1);
 const newPost = await postService.createPost({
   title: 'My Post',
   body: 'Post content...',
-  tags: [1, 2, 3]
+  tags: [1, 2, 3] // Can be tag IDs (numbers) or tag names (strings)
 });
 
 // Update post
 const updated = await postService.updatePost(1, {
-  title: 'Updated Title'
+  title: 'Updated Title',
+  body: 'Updated content...',
+  tags: [1, 2]
 });
 
 // Delete post
 await postService.deletePost(1);
+
+// Set best answer for a post
+const postWithBestAnswer = await postService.setBestAnswer(1, 5); // postId, commentId
+
+// Remove best answer from a post
+const postWithoutBestAnswer = await postService.removeBestAnswer(1);
 ```
 
 ### Comment Service (`commentService`)
@@ -89,7 +118,7 @@ import { commentService } from '@/services';
 // Get comments for a post
 const comments = await commentService.getCommentsByPost(1);
 
-// Create comment
+// Create comment/answer
 const comment = await commentService.createComment({
   content: 'Great post!',
   postId: 1
@@ -103,35 +132,72 @@ const updated = await commentService.updateComment(1, {
 // Delete comment
 await commentService.deleteComment(1);
 
-// Vote on comment
+// Vote on comment (upvote or downvote)
 const voted = await commentService.voteComment(1, {
   type: 'upvote' // or 'downvote'
 });
 
-// Remove vote
+// Remove vote from comment
 const unvoted = await commentService.removeVote(1);
 ```
+
+**Note:** Voting automatically recalculates the comment score and may update the best answer if the post has auto-best-answer enabled.
 
 ### User Service (`userService`)
 
 ```typescript
 import { userService } from '@/services';
 
-// Get all users
+// Get all users (requires authentication)
 const users = await userService.getUsers();
 
-// Get user by ID
+// Get user by ID (requires authentication)
 const user = await userService.getUserById(1);
 
-// Create user (admin only)
-const newUser = await userService.createUser({...});
+// Update user (requires authentication, only owner or admin)
+const updated = await userService.updateUser(1, {
+  username: 'newusername',
+  email: 'newemail@example.com',
+  profileImageUrl: 'https://example.com/image.jpg'
+  // Note: Regular users cannot change 'role' or 'blocked' status
+});
 
-// Update user
-const updated = await userService.updateUser(1, {...});
-
-// Delete user
+// Delete user (requires authentication, owner or admin)
 await userService.deleteUser(1);
 ```
+
+**Note:** User creation is handled through `authService.register()`. The `userService` is primarily for managing existing users.
+
+### Product Service (`productService`)
+
+```typescript
+import { productService } from '@/services';
+
+// Get all products (public)
+const products = await productService.getProducts();
+
+// Get product by ID (public)
+const product = await productService.getProductById(1);
+
+// Create product (admin only)
+const newProduct = await productService.createProduct({
+  name: 'Product Name',
+  description: 'Description',
+  price: 99.99,
+  stock: 100
+});
+
+// Update product (admin only)
+const updated = await productService.updateProduct(1, {
+  name: 'Updated Name',
+  price: 89.99
+});
+
+// Delete product (admin only)
+await productService.deleteProduct(1);
+```
+
+**Note:** Product service is legacy/admin functionality. Most applications will primarily use posts, comments, and tags.
 
 ## Usage in Vue Components
 
