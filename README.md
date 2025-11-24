@@ -304,25 +304,26 @@ Admin[Admin]
     subgraph "CodeFix Q&A Platform"
         UC1[Browse Posts]
         UC2[Register / Login]
-        UC3[Create Post]
+        
         UC4[View Post Details]
+        UC3[Create Post]
         UC5[Add Answer]
         UC6[Edit/Delete Own Post]
-        UC7[Mark Best Answer]
+        UC7[Vote Answer]
         UC8[Edit Profile]
         UC9[Manage Users]
         UC10[Manage Posts]
-        UC11[View System Statistics]
-        UC12[Manage Categories/Tags]
+        UC12[Manage Answers]
     end
 
     %% Visitor interactions
     Visitor --> UC1
+    Visitor --> UC4
     Visitor --> UC2
 
     %% User interactions
-    User --> UC3
     User --> UC4
+    User --> UC3
     User --> UC5
     User --> UC6
     User --> UC7
@@ -331,7 +332,6 @@ Admin[Admin]
     %% Admin interactions
     Admin --> UC9
     Admin --> UC10
-    Admin --> UC11
     Admin --> UC12
 
 ```
