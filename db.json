@@ -1,0 +1,223 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "username": "banaz",
+      "email": "banaz@example.com",
+      "password": "password123",
+      "role": "admin",
+      "profileImageUrl": "https://example.com/avatars/banaz.png",
+      "createdAt": "2025-01-01T09:30:00Z",
+      "updatedAt": "2025-01-02T12:00:00Z"
+    },
+    {
+      "id": 2,
+      "username": "sara",
+      "email": "sara@example.com",
+      "password": "password123",
+      "role": "user",
+      "profileImageUrl": "https://example.com/avatars/sara.png",
+      "createdAt": "2025-01-01T10:15:00Z",
+      "updatedAt": "2025-01-02T11:00:00Z"
+    }
+  ],
+  "posts": [
+    {
+      "id": 1763935678424,
+      "title": "Dolor architecto vol",
+      "body": "Dolore cumque ut fug",
+      "views": 1,
+      "excerpt": "Dolore cumque ut fug",
+      "createdAt": "2025-11-23T22:07:58.424Z",
+      "authorId": 1
+    },
+    {
+      "id": 1763935468638,
+      "title": "ww",
+      "body": "www",
+      "views": 10,
+      "excerpt": "www",
+      "createdAt": "2025-11-23T22:04:28.638Z",
+      "authorId": 1
+    },
+    {
+      "id": 1763935150913,
+      "title": "Test",
+      "body": "asasqas",
+      "views": 2,
+      "excerpt": "asasqas",
+      "createdAt": "2025-11-23T21:59:10.913Z",
+      "authorId": 1
+    },
+    {
+      "id": 1763934824781,
+      "title": "e2e2",
+      "body": "ee2",
+      "views": 1,
+      "excerpt": "ee2",
+      "createdAt": "2025-11-23T21:53:44.781Z",
+      "authorId": 1
+    },
+    {
+      "id": 1763934401918,
+      "title": "hi",
+      "body": "hello",
+      "views": 11,
+      "excerpt": "hello",
+      "createdAt": "2025-11-23T21:46:41.918Z",
+      "authorId": 1
+    },
+    {
+      "id": 2,
+      "title": "Zod vs Yup — Which Should You Use?",
+      "body": "In this post, we'll compare two schema validation libraries and help you decide which one fits your project best...",
+      "views": 81,
+      "excerpt": "Comparing Zod and Yup for frontend developers.",
+      "createdAt": "2025-01-02T10:00:00Z",
+      "authorId": 2
+    },
+    {
+      "id": 1,
+      "title": "Understanding TypeScript Generics",
+      "body": "Generics are powerful tools for creating reusable components. They allow you to write code that works with multiple types without losing type safety...",
+      "views": 120,
+      "excerpt": "A beginner-friendly guide to TS generics.",
+      "createdAt": "2025-01-02T09:00:00Z",
+      "authorId": 1
+    }
+  ],
+  "comments": [
+    {
+      "id": 1,
+      "content": "This post really helped me understand generics!",
+      "score": 5,
+      "createdAt": "2025-01-02T10:30:00Z",
+      "updatedAt": "2025-01-02T11:00:00Z",
+      "postId": 1,
+      "authorId": 2
+    },
+    {
+      "id": 2,
+      "content": "Nice comparison — I prefer Zod for its TypeScript support.",
+      "score": 3,
+      "createdAt": "2025-01-02T11:15:00Z",
+      "updatedAt": "2025-01-02T11:30:00Z",
+      "postId": 2,
+      "authorId": 1
+    },
+    {
+      "id": 1763934408771,
+      "content": "hello",
+      "score": 1,
+      "createdAt": "2025-11-23T21:46:48.771Z",
+      "updatedAt": "2025-11-23T21:46:48.771Z",
+      "postId": 1763934401918,
+      "authorId": 1
+    },
+    {
+      "id": 1763935516496,
+      "content": "hio",
+      "score": -1,
+      "createdAt": "2025-11-23T22:05:16.496Z",
+      "updatedAt": "2025-11-23T22:05:16.496Z",
+      "postId": 1763935468638,
+      "authorId": 1
+    }
+  ],
+  "tags": [
+    {
+      "id": 1,
+      "name": "typescript",
+      "description": "TypeScript related topics",
+      "createdAt": "2025-01-01T09:00:00Z"
+    },
+    {
+      "id": 2,
+      "name": "frontend",
+      "description": "Frontend web development",
+      "createdAt": "2025-01-01T09:10:00Z"
+    },
+    {
+      "id": 3,
+      "name": "javascript",
+      "description": "JavaScript programming",
+      "createdAt": "2025-01-01T09:15:00Z"
+    },
+    {
+      "id": 4,
+      "name": "Qui",
+      "description": "",
+      "createdAt": "2025-11-23T22:07:58.425Z"
+    }
+  ],
+  "post_tags": [
+    {
+      "postId": 1,
+      "tagId": 1
+    },
+    {
+      "postId": 1,
+      "tagId": 2
+    },
+    {
+      "postId": 2,
+      "tagId": 2
+    },
+    {
+      "postId": 1763935150913,
+      "tagId": null
+    },
+    {
+      "postId": 1763935678424,
+      "tagId": 4
+    }
+  ],
+  "votes": [
+    {
+      "id": 1,
+      "type": "upvote",
+      "createdAt": "2025-01-02T10:45:00Z",
+      "userId": 2,
+      "commentId": 1
+    },
+    {
+      "id": 2,
+      "type": "downvote",
+      "createdAt": "2025-01-02T11:00:00Z",
+      "userId": 1,
+      "commentId": 2
+    },
+    {
+      "id": 1763934521425,
+      "type": "upvote",
+      "createdAt": "2025-11-23T21:48:41.425Z",
+      "userId": 1,
+      "commentId": 1763934408771
+    },
+    {
+      "id": 1763935519868,
+      "type": "downvote",
+      "createdAt": "2025-11-23T22:05:19.868Z",
+      "userId": 1,
+      "commentId": 1763935516496
+    }
+  ],
+  "products": [
+    {
+      "id": 1,
+      "name": "Sample Product 1",
+      "description": "This is a sample product description",
+      "price": 99.99,
+      "stock": 50,
+      "createdAt": "2025-01-01T09:00:00Z"
+    },
+    {
+      "id": 2,
+      "name": "Sample Product 2",
+      "description": "Another sample product",
+      "price": 149.99,
+      "stock": 30,
+      "createdAt": "2025-01-01T10:00:00Z"
+    }
+  ]
+}

@@ -1,5 +1,5 @@
 import apiClient from './api';
-import type { RegisterDto, LoginDto, AuthResponse } from '@/types/api.types';
+import type { RegisterDto, LoginDto, AuthResponse, User } from '@/types/api.types';
 
 /**
  * Auth Service - handles all authentication-related API calls
@@ -62,6 +62,15 @@ export const authService = {
    */
   isAuthenticated(): boolean {
     return !!this.getToken();
+  },
+
+  /**
+   * Get current user information
+   * @returns Current user data
+   */
+  async getCurrentUser(): Promise<User> {
+    const response = await apiClient.get<User>('/auth/me');
+    return response.data;
   },
 };
 

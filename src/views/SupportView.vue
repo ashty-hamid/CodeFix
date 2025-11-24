@@ -1,12 +1,10 @@
 <template>
   <DefaultLayout>
     <div class="cf-container" style="max-width: 650px; margin-top: 40px">
-      <h1>Support CodeFix</h1>
+      <h1>{{ $t('support.title') }}</h1>
 
       <p style="color: var(--muted); margin-top: 10px">
-        CodeFix is a free community platform created to help developers solve coding problems, share
-        knowledge, and support each other. If you appreciate our work and want to help us keep the
-        platform running, you can support us through FIB.
+        {{ $t('support.description') }}
       </p>
 
       <div
@@ -18,14 +16,13 @@
           margin-top: 25px;
         "
       >
-        <h2 style="margin-bottom: 10px">FIB Donation Details</h2>
-        <p><strong>Bank:</strong> Fast Iraq Bank (FIB)</p>
-        <p><strong>Account Name:</strong> CodeFix Team</p>
-        <p><strong>FIB Number:</strong> 07xx-xxxxxxx</p>
+        <h2 style="margin-bottom: 10px">{{ $t('support.donationDetails') }}</h2>
+        <p><strong>{{ $t('support.bank') }}</strong> {{ $t('support.bankName') }}</p>
+        <p><strong>{{ $t('support.accountName') }}</strong> {{ $t('support.accountNameValue') }}</p>
+        <p><strong>{{ $t('support.fibNumber') }}</strong> {{ $t('support.fibNumberValue') }}</p>
 
         <p style="color: var(--muted); margin-top: 10px">
-          Any amount, big or small, helps us cover hosting, development and future community
-          features.
+          {{ $t('support.donationNote') }}
         </p>
 
         <div style="margin-top: 20px; text-align: center">
@@ -43,16 +40,16 @@
               color: var(--muted);
             "
           >
-            QR CODE HERE
+            {{ $t('support.qrCodePlaceholder') }}
           </div>
           <small style="display: block; margin-top: 8px; color: var(--muted)">
-            (Add actual QR later)
+            {{ $t('support.addQrLater') }}
           </small>
         </div>
       </div>
 
       <p style="margin-top: 25px; text-align: center; color: var(--muted)">
-        Thank you for supporting CodeFix and helping us grow. ❤️
+        {{ $t('support.thankYou') }}
       </p>
     </div>
   </DefaultLayout>

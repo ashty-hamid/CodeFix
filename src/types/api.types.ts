@@ -56,6 +56,15 @@ export interface Vote {
   commentId: number;
 }
 
+export interface Product {
+  id: number;
+  name: string;
+  description?: string;
+  price: number;
+  stock?: number;
+  createdAt?: string;
+}
+
 // ============================================
 // Request DTOs
 // ============================================
@@ -74,13 +83,13 @@ export interface LoginDto {
 export interface CreatePostDto {
   title: string;
   body: string;
-  tags?: number[];
+  tags?: (number | string)[]; // Can be tag IDs (numbers) or tag names (strings)
 }
 
 export interface UpdatePostDto {
   title?: string;
   body?: string;
-  tags?: number[];
+  tags?: (number | string)[]; // Can be tag IDs (numbers) or tag names (strings)
 }
 
 export interface CreateCommentDto {

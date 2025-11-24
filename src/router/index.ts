@@ -6,7 +6,7 @@ const HomeView = () => import('@/views/HomeView.vue')
 const PostdetailView = () => import('@/views/PostdetailView.vue')
 const AddPostView = () => import('@/views/AddPostView.vue')
 const LoginView = () => import('@/views/LoginView.vue')
-const SignupView = () => import('@/views/SignupView.vue')
+const SignupView = () => import('@/views/Signupview.vue')
 const ProfileView = () => import('@/views/Profileview.vue')
 const SupportView = () => import('@/views/SupportView.vue')
 
@@ -30,11 +30,15 @@ const router = createRouter({
   routes,
 })
 
-// simple guard using the mock store
+// Route guard for authentication
 router.beforeEach((to) => {
   const auth = useAuthStore()
   if (to.meta.requiresAuth && !auth.isLoggedIn) {
     return { name: 'login', query: { redirect: to.fullPath } }
+  }
+  // Redirect to home if already logged in and trying to access login/signup
+  if ((to.name === 'login' || to.name === 'signup') && auth.isLoggedIn) {
+    return { name: 'home' }
   }
 })
 
