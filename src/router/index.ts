@@ -8,12 +8,14 @@ const AddPostView = () => import('@/views/AddPostView.vue')
 const LoginView = () => import('@/views/LoginView.vue')
 const SignupView = () => import('@/views/Signupview.vue')
 const ProfileView = () => import('@/views/Profileview.vue')
+const UserProfileView = () => import('@/views/UserProfileView.vue')
 const SupportView = () => import('@/views/SupportView.vue')
 
 const routes = [
   { path: '/', redirect: '/home' }, // landing
   { path: '/home', name: 'home', component: HomeView },
   { path: '/post/:id', name: 'post', component: PostdetailView, props: true },
+  { path: '/user/:id', name: 'userProfile', component: UserProfileView, props: true },
 
   // protected routes (login required)
   { path: '/add', name: 'add', component: AddPostView, meta: { requiresAuth: true } },

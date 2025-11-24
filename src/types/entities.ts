@@ -19,6 +19,7 @@ export const PostSchema = z.object({
   excerpt: z.string().optional(),
   createdAt: z.string(),
   authorId: z.number(),
+  bestAnswerId: z.number().nullable().optional(),
 });
 
 export const CommentSchema = z.object({
@@ -29,6 +30,7 @@ export const CommentSchema = z.object({
   updatedAt: z.string(),
   postId: z.number(),
   authorId: z.number(),
+  isBestAnswer: z.boolean().optional(),
 });
 
 export const TagSchema = z.object({

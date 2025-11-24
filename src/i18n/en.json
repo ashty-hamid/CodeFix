@@ -41,11 +41,23 @@
     "noPostsYet": "No posts yet",
     "createFirstPost": "Create Your First Post",
     "yourPosts": "Your Posts",
-    "shareFirstError": "Share your first coding error and get help from the community"
+    "shareFirstError": "Share your first coding error and get help from the community",
+    "edit": "Edit",
+    "delete": "Delete",
+    "save": "Save",
+    "editPost": "Edit Post",
+    "editAnswer": "Edit Answer",
+    "confirmDelete": "Confirm Delete",
+    "content": "Content",
+    "bestAnswer": "Best Answer",
+    "markAsBestAnswer": "Mark as Best Answer",
+    "removeBestAnswer": "Remove Best Answer",
+    "loading": "Loading",
+    "backToHome": "Back to Home"
   },
   "navbar": {
     "brand": "CodeFix",
-    "searchPlaceholder": "Search posts, tags...",
+    "searchPlaceholder": "Search posts",
     "searchAriaLabel": "Search"
   },
   "footer": {
@@ -103,7 +115,27 @@
     "addNewPost": "Add New Post",
     "postsCount": "Posts",
     "answersCount": "Answers",
-    "bestAnswersCount": "Best Answers"
+    "bestAnswersCount": "Best Answers",
+    "deleteAccount": "Delete Account",
+    "confirmDeleteAccount": "Are you sure you want to delete your account?",
+    "deleteAccountWarning": "This action cannot be undone. All your posts, comments, and data will be permanently deleted.",
+    "accountDeleted": "Account deleted successfully"
+  },
+  "userProfile": {
+    "userPosts": "Posts",
+    "noPostsYet": "No posts yet",
+    "userHasNoPosts": "This user hasn't shared any posts yet."
+  },
+  "admin": {
+    "blocked": "Blocked",
+    "blockUser": "Block User",
+    "unblockUser": "Unblock User",
+    "deleteUser": "Delete User",
+    "confirmDeleteUser": "Confirm Delete User",
+    "deleteUserWarning": "Are you sure you want to delete {username}? This action cannot be undone. All their posts, comments, and data will be permanently deleted.",
+    "userBlocked": "User {username} has been blocked",
+    "userUnblocked": "User {username} has been unblocked",
+    "userDeleted": "User {username} has been deleted"
   },
   "support": {
     "title": "Support CodeFix",

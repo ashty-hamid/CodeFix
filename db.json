@@ -18,36 +18,40 @@
       "role": "user",
       "profileImageUrl": "https://example.com/avatars/sara.png",
       "createdAt": "2025-01-01T10:15:00Z",
-      "updatedAt": "2025-01-02T11:00:00Z"
+      "updatedAt": "2025-11-24T00:11:34.217Z",
+      "blocked": false
+    },
+    {
+      "id": 1763940831863,
+      "username": "a",
+      "email": "a@a.aa",
+      "password": "aaaaaaaa",
+      "role": "user",
+      "profileImageUrl": "",
+      "createdAt": "2025-11-23T23:33:51.863Z",
+      "updatedAt": "2025-11-23T23:33:51.863Z"
     }
   ],
   "posts": [
     {
-      "id": 1763935678424,
-      "title": "Dolor architecto vol",
-      "body": "Dolore cumque ut fug",
-      "views": 1,
-      "excerpt": "Dolore cumque ut fug",
-      "createdAt": "2025-11-23T22:07:58.424Z",
-      "authorId": 1
-    },
-    {
       "id": 1763935468638,
       "title": "ww",
       "body": "www",
-      "views": 10,
+      "views": 106,
       "excerpt": "www",
       "createdAt": "2025-11-23T22:04:28.638Z",
-      "authorId": 1
+      "authorId": 1,
+      "bestAnswerId": 1763939134915
     },
     {
       "id": 1763935150913,
       "title": "Test",
-      "body": "asasqas",
-      "views": 2,
-      "excerpt": "asasqas",
+      "body": "asasqasa",
+      "views": 11,
+      "excerpt": "asasqasa",
       "createdAt": "2025-11-23T21:59:10.913Z",
-      "authorId": 1
+      "authorId": 1,
+      "bestAnswerId": 1763938708688
     },
     {
       "id": 1763934824781,
@@ -71,16 +75,17 @@
       "id": 2,
       "title": "Zod vs Yup — Which Should You Use?",
       "body": "In this post, we'll compare two schema validation libraries and help you decide which one fits your project best...",
-      "views": 81,
+      "views": 89,
       "excerpt": "Comparing Zod and Yup for frontend developers.",
       "createdAt": "2025-01-02T10:00:00Z",
-      "authorId": 2
+      "authorId": 2,
+      "bestAnswerId": null
     },
     {
       "id": 1,
       "title": "Understanding TypeScript Generics",
       "body": "Generics are powerful tools for creating reusable components. They allow you to write code that works with multiple types without losing type safety...",
-      "views": 120,
+      "views": 128,
       "excerpt": "A beginner-friendly guide to TS generics.",
       "createdAt": "2025-01-02T09:00:00Z",
       "authorId": 1
@@ -99,7 +104,7 @@
     {
       "id": 2,
       "content": "Nice comparison — I prefer Zod for its TypeScript support.",
-      "score": 3,
+      "score": -1,
       "createdAt": "2025-01-02T11:15:00Z",
       "updatedAt": "2025-01-02T11:30:00Z",
       "postId": 2,
@@ -122,6 +127,24 @@
       "updatedAt": "2025-11-23T22:05:16.496Z",
       "postId": 1763935468638,
       "authorId": 1
+    },
+    {
+      "id": 1763938708688,
+      "content": "ss",
+      "score": 0,
+      "createdAt": "2025-11-23T22:58:28.688Z",
+      "updatedAt": "2025-11-23T22:58:28.688Z",
+      "postId": 1763935150913,
+      "authorId": 1
+    },
+    {
+      "id": 1763939134915,
+      "content": "dd",
+      "score": 12,
+      "createdAt": "2025-11-23T23:05:34.915Z",
+      "updatedAt": "2025-11-23T23:05:34.915Z",
+      "postId": 1763935468638,
+      "authorId": 2
     }
   ],
   "tags": [
@@ -166,20 +189,9 @@
     {
       "postId": 1763935150913,
       "tagId": null
-    },
-    {
-      "postId": 1763935678424,
-      "tagId": 4
     }
   ],
   "votes": [
-    {
-      "id": 1,
-      "type": "upvote",
-      "createdAt": "2025-01-02T10:45:00Z",
-      "userId": 2,
-      "commentId": 1
-    },
     {
       "id": 2,
       "type": "downvote",
@@ -200,24 +212,97 @@
       "createdAt": "2025-11-23T22:05:19.868Z",
       "userId": 1,
       "commentId": 1763935516496
-    }
-  ],
-  "products": [
-    {
-      "id": 1,
-      "name": "Sample Product 1",
-      "description": "This is a sample product description",
-      "price": 99.99,
-      "stock": 50,
-      "createdAt": "2025-01-01T09:00:00Z"
     },
     {
-      "id": 2,
-      "name": "Sample Product 2",
-      "description": "Another sample product",
-      "price": 149.99,
-      "stock": 30,
-      "createdAt": "2025-01-01T10:00:00Z"
+      "id": 1763939200001,
+      "type": "upvote",
+      "createdAt": "2025-11-23T23:10:00.001Z",
+      "userId": 3,
+      "commentId": 1763939134915
+    },
+    {
+      "id": 1763939200002,
+      "type": "upvote",
+      "createdAt": "2025-11-23T23:10:00.002Z",
+      "userId": 4,
+      "commentId": 1763939134915
+    },
+    {
+      "id": 1763939200003,
+      "type": "upvote",
+      "createdAt": "2025-11-23T23:10:00.003Z",
+      "userId": 5,
+      "commentId": 1763939134915
+    },
+    {
+      "id": 1763939200004,
+      "type": "upvote",
+      "createdAt": "2025-11-23T23:10:00.004Z",
+      "userId": 6,
+      "commentId": 1763939134915
+    },
+    {
+      "id": 1763939200005,
+      "type": "upvote",
+      "createdAt": "2025-11-23T23:10:00.005Z",
+      "userId": 7,
+      "commentId": 1763939134915
+    },
+    {
+      "id": 1763939200006,
+      "type": "upvote",
+      "createdAt": "2025-11-23T23:10:00.006Z",
+      "userId": 8,
+      "commentId": 1763939134915
+    },
+    {
+      "id": 1763939200007,
+      "type": "upvote",
+      "createdAt": "2025-11-23T23:10:00.007Z",
+      "userId": 9,
+      "commentId": 1763939134915
+    },
+    {
+      "id": 1763939200008,
+      "type": "upvote",
+      "createdAt": "2025-11-23T23:10:00.008Z",
+      "userId": 10,
+      "commentId": 1763939134915
+    },
+    {
+      "id": 1763939200009,
+      "type": "upvote",
+      "createdAt": "2025-11-23T23:10:00.009Z",
+      "userId": 11,
+      "commentId": 1763939134915
+    },
+    {
+      "id": 1763939200010,
+      "type": "upvote",
+      "createdAt": "2025-11-23T23:10:00.010Z",
+      "userId": 12,
+      "commentId": 1763939134915
+    },
+    {
+      "id": 1763939200011,
+      "type": "upvote",
+      "createdAt": "2025-11-23T23:10:00.011Z",
+      "userId": 13,
+      "commentId": 1763939134915
+    },
+    {
+      "id": 1763939924339,
+      "type": "upvote",
+      "createdAt": "2025-11-23T23:18:44.339Z",
+      "userId": 2,
+      "commentId": 1
+    },
+    {
+      "id": 1763940836768,
+      "type": "upvote",
+      "createdAt": "2025-11-23T23:33:56.768Z",
+      "userId": 1763940831863,
+      "commentId": 1763939134915
     }
   ]
 }

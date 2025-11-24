@@ -5,15 +5,15 @@ const path = require('path');
 const router = jsonServer.router(path.join(__dirname, '../db.json'));
 const middlewares = jsonServer.defaults();
 
-// Secret key for JWT (in production, use environment variable)
+
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 const JWT_EXPIRES_IN = '7d';
 
-// Enable CORS and other default middlewares
+
 server.use(middlewares);
 server.use(jsonServer.bodyParser);
 
-// Helper function to generate JWT token
+
 function generateToken(user) {
   return jwt.sign(
     {
@@ -27,7 +27,7 @@ function generateToken(user) {
   );
 }
 
-// Helper function to verify JWT token
+
 function verifyToken(token) {
   try {
     return jwt.verify(token, JWT_SECRET);
@@ -36,7 +36,7 @@ function verifyToken(token) {
   }
 }
 
-// Authentication middleware
+
 function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
@@ -54,7 +54,6 @@ function authenticateToken(req, res, next) {
   next();
 }
 
-// Authorization middleware - check if user is admin
 function requireAdmin(req, res, next) {
   if (req.user.role !== 'admin') {
     return res.status(403).json({ message: 'Admin access required' });
@@ -62,7 +61,7 @@ function requireAdmin(req, res, next) {
   next();
 }
 
-// Authorization middleware - check if user is owner or admin
+
 function requireOwnerOrAdmin(req, res, next) {
   const resourceId = parseInt(req.params.id);
   if (req.user.role !== 'admin' && req.user.id !== resourceId) {
@@ -71,14 +70,103 @@ function requireOwnerOrAdmin(req, res, next) {
   next();
 }
 
-// Helper to get current user from database
+
 function getCurrentUser(db, userId) {
   return db.get('users').find({ id: userId }).value();
 }
 
-// ============================================
+// Helper function to automatically set best answer based on upvotes
+function updateBestAnswerForPost(db, postId) {
+  const post = db.get('posts').find({ id: postId }).value();
+  if (!post) return;
+  
+  console.log(`[Best Answer] Recalculating for post ${postId}`);
+
+  // Get all comments for this post
+  const comments = db.get('comments').filter({ postId }).value();
+  
+  // Calculate upvote and downvote counts for each comment and update scores
+  const commentsWithUpvotes = comments.map(comment => {
+    const allVotes = db.get('votes')
+      .filter({ commentId: comment.id })
+      .value();
+    
+    const upvotes = allVotes.filter(v => v.type === 'upvote').length;
+    const downvotes = allVotes.filter(v => v.type === 'downvote').length;
+    const calculatedScore = upvotes - downvotes;
+    
+    // Update comment score to match actual votes
+    if (comment.score !== calculatedScore) {
+      db.get('comments')
+        .find({ id: comment.id })
+        .assign({ score: calculatedScore })
+        .write();
+    }
+    
+    return {
+      ...comment,
+      score: calculatedScore,
+      upvoteCount: upvotes,
+      downvoteCount: downvotes,
+    };
+  });
+
+  // Check if there's a current best answer and if it has >= 10 upvotes
+  const currentBestAnswer = post.bestAnswerId 
+    ? commentsWithUpvotes.find(c => c.id === post.bestAnswerId)
+    : null;
+  
+  const currentBestHasEnoughUpvotes = currentBestAnswer && currentBestAnswer.upvoteCount >= 10;
+  
+  // Find the comment with maximum upvotes that has at least 10 upvotes
+  const eligibleComments = commentsWithUpvotes.filter(c => c.upvoteCount >= 10);
+  
+  console.log(`[Best Answer] Comments with upvotes:`, commentsWithUpvotes.map(c => ({ id: c.id, upvotes: c.upvoteCount, score: c.score })));
+  console.log(`[Best Answer] Eligible comments (>=10 upvotes):`, eligibleComments.map(c => ({ id: c.id, upvotes: c.upvoteCount })));
+  console.log(`[Best Answer] Current best answer:`, currentBestAnswer ? { id: currentBestAnswer.id, upvotes: currentBestAnswer.upvoteCount } : 'none');
+  
+  let bestAnswerId = post.bestAnswerId; // Preserve current by default
+  
+  // Only auto-update if:
+  // 1. There's no current best answer, OR
+  // 2. Current best answer has >= 10 upvotes (was auto-set, can be replaced)
+  if (!currentBestAnswer || currentBestHasEnoughUpvotes) {
+    if (eligibleComments.length > 0) {
+      // Sort by upvote count (descending), then by score (descending) as tiebreaker
+      eligibleComments.sort((a, b) => {
+        if (b.upvoteCount !== a.upvoteCount) {
+          return b.upvoteCount - a.upvoteCount;
+        }
+        return b.score - a.score;
+      });
+      
+      bestAnswerId = eligibleComments[0].id;
+      console.log(`[Best Answer] Setting best answer to comment ${bestAnswerId} with ${eligibleComments[0].upvoteCount} upvotes`);
+    } else {
+      // No eligible comments, but if current best has < 10 upvotes, preserve it (manual selection)
+      if (currentBestAnswer && !currentBestHasEnoughUpvotes) {
+        console.log(`[Best Answer] Preserving manual best answer (${currentBestAnswer.id}) with ${currentBestAnswer.upvoteCount} upvotes`);
+        bestAnswerId = currentBestAnswer.id;
+      } else {
+        console.log(`[Best Answer] No eligible comments found (need >=10 upvotes)`);
+        bestAnswerId = null;
+      }
+    }
+  } else {
+    // Current best answer has < 10 upvotes (manual selection), preserve it
+    console.log(`[Best Answer] Preserving manual best answer (${currentBestAnswer.id}) with ${currentBestAnswer.upvoteCount} upvotes`);
+  }
+
+  // Update post with best answer
+  db.get('posts')
+    .find({ id: postId })
+    .assign({ bestAnswerId })
+    .write();
+    
+  console.log(`[Best Answer] Updated post ${postId} with bestAnswerId: ${bestAnswerId}`);
+}
+
 // Authentication Routes
-// ============================================
 
 // Register new user
 server.post('/auth/register', (req, res) => {
@@ -96,12 +184,13 @@ server.post('/auth/register', (req, res) => {
   }
 
   const newUser = {
-    id: Date.now(), // Simple ID generation (in production, use proper ID generation)
+    id: Date.now(), 
     username,
     email,
-    password, // In production, hash the password!
+    password,
     role: 'user',
     profileImageUrl: '',
+    blocked: false,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
@@ -133,7 +222,11 @@ server.post('/auth/login', (req, res) => {
     return res.status(401).json({ message: 'Invalid email or password' });
   }
 
-  // Remove password from response
+  // Check if user is blocked
+  if (user.blocked) {
+    return res.status(403).json({ message: 'Your account has been blocked. Please contact an administrator.' });
+  }
+
   const { password: _, ...userWithoutPassword } = user;
   const access_token = generateToken(user);
 
@@ -143,9 +236,7 @@ server.post('/auth/login', (req, res) => {
   });
 });
 
-// ============================================
 // Protected Routes - Users
-// ============================================
 
 // Get all users (protected)
 server.get('/users', authenticateToken, (req, res) => {
@@ -177,13 +268,19 @@ server.put('/users/:id', authenticateToken, requireOwnerOrAdmin, (req, res) => {
     return res.status(404).json({ message: 'User not found' });
   }
 
-  // Don't allow password or role updates through this endpoint (use separate endpoints)
-  const { password, role, id, ...updateData } = req.body;
+  const { password, role, id, blocked, ...updateData } = req.body;
+  
+  // Only admins can change blocked status
   const updatedUser = {
     ...user,
     ...updateData,
     updatedAt: new Date().toISOString(),
   };
+  
+  // Allow blocked field update only if user is admin
+  if (req.user.role === 'admin' && blocked !== undefined) {
+    updatedUser.blocked = blocked;
+  }
 
   db.get('users').find({ id: userId }).assign(updatedUser).write();
 
@@ -191,8 +288,8 @@ server.put('/users/:id', authenticateToken, requireOwnerOrAdmin, (req, res) => {
   res.json(userWithoutPassword);
 });
 
-// Delete user (protected - only admin)
-server.delete('/users/:id', authenticateToken, requireAdmin, (req, res) => {
+// Block user (protected - admin only)
+server.post('/users/:id/block', authenticateToken, requireAdmin, (req, res) => {
   const db = router.db;
   const userId = parseInt(req.params.id);
   const user = db.get('users').find({ id: userId }).value();
@@ -201,13 +298,92 @@ server.delete('/users/:id', authenticateToken, requireAdmin, (req, res) => {
     return res.status(404).json({ message: 'User not found' });
   }
 
+  // Prevent blocking admins
+  if (user.role === 'admin') {
+    return res.status(403).json({ message: 'Cannot block admin users' });
+  }
+
+  // Prevent blocking yourself
+  if (req.user.id === userId) {
+    return res.status(403).json({ message: 'Cannot block yourself' });
+  }
+
+  const updatedUser = {
+    ...user,
+    blocked: true,
+    updatedAt: new Date().toISOString(),
+  };
+
+  db.get('users').find({ id: userId }).assign(updatedUser).write();
+
+  const { password, ...userWithoutPassword } = updatedUser;
+  res.json(userWithoutPassword);
+});
+
+// Unblock user (protected - admin only)
+server.post('/users/:id/unblock', authenticateToken, requireAdmin, (req, res) => {
+  const db = router.db;
+  const userId = parseInt(req.params.id);
+  const user = db.get('users').find({ id: userId }).value();
+
+  if (!user) {
+    return res.status(404).json({ message: 'User not found' });
+  }
+
+  const updatedUser = {
+    ...user,
+    blocked: false,
+    updatedAt: new Date().toISOString(),
+  };
+
+  db.get('users').find({ id: userId }).assign(updatedUser).write();
+
+  const { password, ...userWithoutPassword } = updatedUser;
+  res.json(userWithoutPassword);
+});
+
+// Delete user (protected - owner or admin)
+server.delete('/users/:id', authenticateToken, requireOwnerOrAdmin, (req, res) => {
+  const db = router.db;
+  const userId = parseInt(req.params.id);
+  const user = db.get('users').find({ id: userId }).value();
+
+  if (!user) {
+    return res.status(404).json({ message: 'User not found' });
+  }
+
+  // Cleanup: Remove all user-related data
+  // Delete user's posts and related data
+  const userPosts = db.get('posts').filter({ authorId: userId }).value();
+  userPosts.forEach(post => {
+    db.get('comments').remove({ postId: post.id }).write();
+    db.get('post_tags').remove({ postId: post.id }).write();
+    // Remove votes on comments in these posts
+    const postComments = db.get('comments').filter({ postId: post.id }).value();
+    postComments.forEach(comment => {
+      db.get('votes').remove({ commentId: comment.id }).write();
+    });
+  });
+  db.get('posts').remove({ authorId: userId }).write();
+
+  // Delete user's comments and votes
+  const userComments = db.get('comments').filter({ authorId: userId }).value();
+  userComments.forEach(comment => {
+    db.get('votes').remove({ commentId: comment.id }).write();
+    // Recalculate best answer for posts that had this user's comments
+    updateBestAnswerForPost(db, comment.postId);
+  });
+  db.get('comments').remove({ authorId: userId }).write();
+
+  // Delete user's votes
+  db.get('votes').remove({ userId }).write();
+
+  // Finally, delete the user
   db.get('users').remove({ id: userId }).write();
   res.status(204).send();
 });
 
-// ============================================
 // Protected Routes - Posts
-// ============================================
 
 // Get all posts with pagination, search, and filtering
 server.get('/posts', (req, res) => {
@@ -227,6 +403,14 @@ server.get('/posts', (req, res) => {
   // Filter by author
   if (req.query.authorId) {
     posts = posts.filter((post) => post.authorId === parseInt(req.query.authorId));
+  }
+
+  // Filter by tag (server-side)
+  if (req.query.tagId) {
+    const tagId = parseInt(req.query.tagId);
+    const postTags = db.get('post_tags').filter({ tagId }).value();
+    const postIdsWithTag = new Set(postTags.map(pt => pt.postId));
+    posts = posts.filter((post) => postIdsWithTag.has(post.id));
   }
 
   // Apply sorting
@@ -268,6 +452,7 @@ server.get('/posts', (req, res) => {
       author: author ? { id: author.id, username: author.username } : null,
       tags: tags || [],
       commentsCount: commentsCount || 0,
+      bestAnswerId: post.bestAnswerId || null,
     };
   });
 
@@ -294,31 +479,43 @@ server.get('/posts/:id', (req, res) => {
     return res.status(404).json({ message: 'Post not found' });
   }
 
-  // Increment views
+  // Recalculate best answer automatically based on current votes
+  updateBestAnswerForPost(db, post.id);
+  
+  // Get updated post with best answer, then increment views
+  const updatedPost = db.get('posts').find({ id: post.id }).value();
+  
+  // Increment views (preserving bestAnswerId)
+  const viewsIncremented = updatedPost.views + 1;
   db.get('posts')
-    .find({ id: post.id })
-    .assign({ views: post.views + 1 })
+    .find({ id: updatedPost.id })
+    .assign({ views: viewsIncremented })
     .write();
+  
+  // Get final post with incremented views and bestAnswerId
+  const finalPost = db.get('posts').find({ id: post.id }).value();
 
   // Enrich with author, tags, and comments
-  const author = db.get('users').find({ id: post.authorId }).value();
-  const postTags = db.get('post_tags').filter({ postId: post.id }).value();
+  const author = db.get('users').find({ id: finalPost.authorId }).value();
+  const postTags = db.get('post_tags').filter({ postId: finalPost.id }).value();
   const tags = postTags.map((pt) => db.get('tags').find({ id: pt.tagId }).value());
-  const comments = db.get('comments').filter({ postId: post.id }).value();
+  const comments = db.get('comments').filter({ postId: finalPost.id }).value();
   const enrichedComments = comments.map((comment) => {
     const commentAuthor = db.get('users').find({ id: comment.authorId }).value();
     return {
       ...comment,
       author: commentAuthor ? { id: commentAuthor.id, username: commentAuthor.username } : null,
+      isBestAnswer: finalPost.bestAnswerId === comment.id,
     };
   });
 
   res.json({
-    ...post,
+    ...finalPost,
     author: author ? { id: author.id, username: author.username } : null,
     tags: tags || [],
     comments: enrichedComments || [],
     commentsCount: comments.length,
+    bestAnswerId: finalPost.bestAnswerId || null,
   });
 });
 
@@ -362,6 +559,7 @@ server.post('/posts', authenticateToken, (req, res) => {
     author: author ? { id: author.id, username: author.username } : null,
     tags: postTagsData || [],
     commentsCount: 0,
+    bestAnswerId: null,
   });
 });
 
@@ -397,7 +595,19 @@ server.patch('/posts/:id', authenticateToken, (req, res) => {
     });
   }
 
-  res.json(updatedPost);
+  // Enrich with author, tags, and comments count
+  const author = db.get('users').find({ id: post.authorId }).value();
+  const postTags = db.get('post_tags').filter({ postId }).value();
+  const enrichedTags = postTags.map((pt) => db.get('tags').find({ id: pt.tagId }).value());
+  const commentsCount = db.get('comments').filter({ postId }).value().length;
+
+  res.json({
+    ...updatedPost,
+    author: author ? { id: author.id, username: author.username } : null,
+    tags: enrichedTags || [],
+    commentsCount: commentsCount || 0,
+    bestAnswerId: updatedPost.bestAnswerId || null,
+  });
 });
 
 // Delete post (protected - only author or admin)
@@ -429,6 +639,14 @@ server.delete('/posts/:id', authenticateToken, (req, res) => {
 server.get('/comments/post/:postId', (req, res) => {
   const db = router.db;
   const postId = parseInt(req.params.postId);
+  
+  // Recalculate best answer automatically based on current votes
+  updateBestAnswerForPost(db, postId);
+  
+  // Get updated post with best answer
+  const post = db.get('posts').find({ id: postId }).value();
+  const bestAnswerId = post ? (post.bestAnswerId || null) : null;
+  
   const comments = db.get('comments').filter({ postId }).value();
 
   const enrichedComments = comments.map((comment) => {
@@ -436,6 +654,7 @@ server.get('/comments/post/:postId', (req, res) => {
     return {
       ...comment,
       author: author ? { id: author.id, username: author.username } : null,
+      isBestAnswer: bestAnswerId === comment.id,
     };
   });
 
@@ -519,8 +738,13 @@ server.delete('/comments/:id', authenticateToken, (req, res) => {
     return res.status(403).json({ message: 'You can only delete your own comments' });
   }
 
+  const postId = comment.postId;
+  
   db.get('comments').remove({ id: commentId }).write();
   db.get('votes').remove({ commentId }).write();
+
+  // Recalculate best answer if the deleted comment was the best answer
+  updateBestAnswerForPost(db, postId);
 
   res.status(204).send();
 });
@@ -579,6 +803,9 @@ server.post('/comments/:id/vote', authenticateToken, (req, res) => {
 
   db.get('comments').find({ id: commentId }).assign(updatedComment).write();
 
+  // Automatically update best answer for this post
+  updateBestAnswerForPost(db, comment.postId);
+
   const author = db.get('users').find({ id: comment.authorId }).value();
   res.json({
     ...updatedComment,
@@ -616,10 +843,124 @@ server.delete('/comments/:id/vote', authenticateToken, (req, res) => {
 
   db.get('comments').find({ id: commentId }).assign(updatedComment).write();
 
+  // Automatically update best answer for this post
+  updateBestAnswerForPost(db, comment.postId);
+
   const author = db.get('users').find({ id: comment.authorId }).value();
   res.json({
     ...updatedComment,
     author: author ? { id: author.id, username: author.username } : null,
+  });
+});
+
+// ============================================
+// Best Answer Routes
+// ============================================
+
+// Set best answer for a post (protected - only post author or admin)
+// Note: Manual selections with < 10 upvotes will be preserved by the automatic system
+server.post('/posts/:id/best-answer', authenticateToken, (req, res) => {
+  const db = router.db;
+  const postId = parseInt(req.params.id);
+  const { commentId } = req.body;
+
+  if (!commentId) {
+    return res.status(400).json({ message: 'commentId is required' });
+  }
+
+  const post = db.get('posts').find({ id: postId }).value();
+  if (!post) {
+    return res.status(404).json({ message: 'Post not found' });
+  }
+
+  // Check if user is post author or admin
+  if (req.user.role !== 'admin' && post.authorId !== req.user.id) {
+    return res.status(403).json({ message: 'Only the post author can set the best answer' });
+  }
+
+  // Verify comment exists and belongs to this post
+  const comment = db.get('comments').find({ id: parseInt(commentId), postId }).value();
+  if (!comment) {
+    return res.status(404).json({ message: 'Comment not found or does not belong to this post' });
+  }
+
+  // Update post with best answer
+  const updatedPost = {
+    ...post,
+    bestAnswerId: parseInt(commentId),
+  };
+
+  db.get('posts').find({ id: postId }).assign(updatedPost).write();
+
+  // Enrich post response
+  const author = db.get('users').find({ id: post.authorId }).value();
+  const postTags = db.get('post_tags').filter({ postId }).value();
+  const tags = postTags.map((pt) => db.get('tags').find({ id: pt.tagId }).value());
+  const comments = db.get('comments').filter({ postId }).value();
+  const enrichedComments = comments.map((c) => {
+    const commentAuthor = db.get('users').find({ id: c.authorId }).value();
+    return {
+      ...c,
+      author: commentAuthor ? { id: commentAuthor.id, username: commentAuthor.username } : null,
+      isBestAnswer: c.id === parseInt(commentId),
+    };
+  });
+
+  res.json({
+    ...updatedPost,
+    author: author ? { id: author.id, username: author.username } : null,
+    tags: tags || [],
+    comments: enrichedComments || [],
+    commentsCount: comments.length,
+    bestAnswerId: updatedPost.bestAnswerId,
+  });
+});
+
+// Remove best answer from a post (protected - only post author or admin)
+// Note: The automatic system may set a new best answer on the next vote if eligible
+server.delete('/posts/:id/best-answer', authenticateToken, (req, res) => {
+  const db = router.db;
+  const postId = parseInt(req.params.id);
+
+  const post = db.get('posts').find({ id: postId }).value();
+  if (!post) {
+    return res.status(404).json({ message: 'Post not found' });
+  }
+
+  // Check if user is post author or admin
+  if (req.user.role !== 'admin' && post.authorId !== req.user.id) {
+    return res.status(403).json({ message: 'Only the post author can remove the best answer' });
+  }
+
+  // Remove best answer
+  const updatedPost = {
+    ...post,
+    bestAnswerId: null,
+  };
+
+  db.get('posts').find({ id: postId }).assign(updatedPost).write();
+
+  // Enrich post response
+  const author = db.get('users').find({ id: post.authorId }).value();
+  const postTags = db.get('post_tags').filter({ postId }).value();
+  const tags = postTags.map((pt) => db.get('tags').find({ id: pt.tagId }).value());
+  const comments = db.get('comments').filter({ postId }).value();
+  const enrichedComments = comments.map((c) => {
+    const commentAuthor = db.get('users').find({ id: c.authorId }).value();
+    return {
+      ...c,
+      author: commentAuthor ? { id: commentAuthor.id, username: commentAuthor.username } : null,
+      isBestAnswer: false,
+    };
+  });
+
+  res.json({
+    ...updatedPost,
+    author: author ? { id: author.id, username: author.username } : null,
+    tags: tags || [],
+    comments: enrichedComments || [],
+    commentsCount: comments.length,
+    bestAnswerId: null,
   });
 });
 
