@@ -10,7 +10,7 @@
       <div style="margin-bottom: 20px; display: flex; gap: 12px; align-items: center">
         <label style="color: var(--muted)">{{ $t('common.filterByTag') }}</label>
 
-        <select v-model="selectedTag" class="cf-search" style="width: 220px">
+        <select v-model="selectedTag" class="cf-search" style="width: 220px" @change="handleTagChange">
           <option value="">{{ $t('common.allTags') }}</option>
           <option v-for="tag in tags" :key="tag.id" :value="tag.name">
             {{ tag.name }}
@@ -62,7 +62,16 @@
 
           <!-- AUTHOR -->
           <div style="color: var(--muted); margin-top: 4px">
-            {{ $t('common.postedBy') }} {{ post.author?.username ?? $t('common.unknown') }}
+            {{ $t('common.postedBy') }}
+            <RouterLink 
+              v-if="post.author?.id" 
+              :to="`/user/${post.author.id}`" 
+              class="cf-link"
+              style="margin-left: 4px"
+            >
+              {{ post.author.username }}
+            </RouterLink>
+            <span v-else style="margin-left: 4px">{{ $t('common.unknown') }}</span>
           </div>
 
           <!-- EXCERPT -->
@@ -127,13 +136,15 @@
 
 <script setup lang="ts">
 import DefaultLayout from '@/components/layouts/DefaultLayout.vue'
-import { computed, ref, onMounted } from 'vue'
+import { computed, ref, onMounted, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import { usePostsStore } from '@/stores/postsStore'
 
 const store = usePostsStore()
+const route = useRoute()
 
-// all tags
-const tags = computed(() => store.allTags)
+// all tags - use store.tags (fetched from API) or fallback to allTags (extracted from posts)
+const tags = computed(() => store.tags.length > 0 ? store.tags : store.allTags)
 
 // selected tag
 const selectedTag = ref('')
@@ -141,12 +152,43 @@ const selectedTag = ref('')
 // all posts enriched with tags + answers count
 const posts = computed(() => store.postsWithMeta)
 
-// filter logic
-const filteredPosts = computed(() => {
-  if (!selectedTag.value) return posts.value
-  return posts.value.filter((post) => 
-    post.tags?.some((t) => t && t.name && t.name === selectedTag.value)
-  )
+// Since we're using server-side filtering, no need for client-side filtering
+const filteredPosts = computed(() => posts.value)
+
+// Fetch posts with current filters
+async function fetchFilteredPosts() {
+  try {
+    const queryParams: { limit?: number; search?: string; tagId?: number } = {
+      limit: 50,
+    }
+    
+    // Get search query from route
+    const searchQuery = route.query.search as string | undefined
+    if (searchQuery && searchQuery.trim()) {
+      queryParams.search = searchQuery.trim()
+    }
+    
+    if (selectedTag.value) {
+      const tag = tags.value.find(t => t.name === selectedTag.value)
+      if (tag) {
+        queryParams.tagId = tag.id
+      }
+    }
+    
+    await store.fetchPosts(queryParams)
+  } catch (e: any) {
+    console.error('Failed to fetch posts:', e)
+  }
+}
+
+// Handle tag change
+function handleTagChange() {
+  fetchFilteredPosts()
+}
+
+// Watch for route query changes (when search query changes from navbar)
+watch(() => route.query.search, () => {
+  fetchFilteredPosts()
 })
 
 // count score of all answers inside a post
@@ -161,13 +203,14 @@ function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString()
 }
 
-// Fetch posts on mount
+// Fetch posts and tags on mount
 onMounted(async () => {
   try {
-    console.log('Fetching posts...')
-    const response = await store.fetchPosts({ limit: 50 })
-    console.log('Posts fetched:', response.data?.length || posts.value.length)
-    console.log('Posts in store:', posts.value)
+    // Fetch tags first so the dropdown is populated
+    await store.fetchTags()
+    
+    // Fetch posts with any search query from route
+    await fetchFilteredPosts()
   } catch (e: any) {
     console.error('Failed to fetch posts:', e)
     console.error('Error details:', e.response?.data || e.message)

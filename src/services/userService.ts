@@ -32,4 +32,16 @@ export const userService = {
   async deleteUser(id: number): Promise<void> {
     await apiClient.delete(`/users/${id}`);
   },
+
+  // Block a user (admin only)
+  async blockUser(id: number): Promise<User> {
+    const response = await apiClient.post<User>(`/users/${id}/block`);
+    return response.data;
+  },
+
+  // Unblock a user (admin only)
+  async unblockUser(id: number): Promise<User> {
+    const response = await apiClient.post<User>(`/users/${id}/unblock`);
+    return response.data;
+  },
 };

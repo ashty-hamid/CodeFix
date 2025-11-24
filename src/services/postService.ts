@@ -65,5 +65,28 @@ export const postService = {
   async deletePost(id: number): Promise<void> {
     await apiClient.delete(`/posts/${id}`);
   },
+
+  /**
+   * Set best answer for a post
+   * @param id - Post ID
+   * @param commentId - Comment ID to set as best answer
+   * @returns Updated post
+   */
+  async setBestAnswer(id: number, commentId: number): Promise<Post> {
+    const response = await apiClient.post<Post>(`/posts/${id}/best-answer`, {
+      commentId,
+    });
+    return response.data;
+  },
+
+  /**
+   * Remove best answer from a post
+   * @param id - Post ID
+   * @returns Updated post
+   */
+  async removeBestAnswer(id: number): Promise<Post> {
+    const response = await apiClient.delete<Post>(`/posts/${id}/best-answer`);
+    return response.data;
+  },
 };
 

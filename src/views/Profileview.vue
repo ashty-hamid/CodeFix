@@ -34,6 +34,16 @@
             <button class="cf-btn cf-btn-primary">{{ $t('profile.addNewPost') }}</button>
           </RouterLink>
         </div>
+
+        <!-- Delete Account Button -->
+        <div class="btn-row" style="margin-top: 12px;">
+          <button 
+            class="cf-btn cf-btn-danger" 
+            @click="showDeleteConfirm = true"
+          >
+            {{ $t('profile.deleteAccount') }}
+          </button>
+        </div>
       </div>
 
       <!-- USER POSTS SECTION -->
@@ -82,23 +92,71 @@
         </div>
       </div>
     </section>
+
+    <!-- Toast Notifications -->
+    <ToastNotification />
+
+    <!-- Delete Account Confirmation Dialog -->
+    <div v-if="showDeleteConfirm" class="modal-overlay" @click.self="showDeleteConfirm = false">
+      <div class="modal-content">
+        <h3>{{ $t('profile.confirmDeleteAccount') }}</h3>
+        <p class="warning-text">{{ $t('profile.deleteAccountWarning') }}</p>
+        <div class="modal-actions">
+          <button class="cf-btn cf-btn-secondary" @click="showDeleteConfirm = false">
+            {{ $t('common.cancel') }}
+          </button>
+          <button 
+            class="cf-btn cf-btn-danger" 
+            @click="handleDeleteAccount"
+            :disabled="auth.isLoading"
+          >
+            {{ auth.isLoading ? '...' : $t('common.delete') }}
+          </button>
+        </div>
+      </div>
+    </div>
   </DefaultLayout>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/authStore'
 import { usePostsStore } from '@/stores/postsStore'
+import { useToast } from '../../composables/useToast'
+import ToastNotification from '../../components/ToastNotification.vue'
 import DefaultLayout from '@/components/layouts/DefaultLayout.vue'
 
 const auth = useAuthStore()
 const postsStore = usePostsStore()
+const router = useRouter()
+const { t } = useI18n()
+const { success, error: showError } = useToast()
+const showDeleteConfirm = ref(false)
 
-// Fetch user's posts on mount
+// Fetch user's posts and all posts (to check for best answers) on mount
 onMounted(async () => {
   if (auth.user) {
     try {
       await postsStore.fetchPosts({ authorId: auth.user.id })
+      // Fetch all posts to check for best answers
+      await postsStore.fetchPosts({ limit: 1000 })
+      
+      // Fetch comments only for posts where we don't already have the best answer comment
+      const postsWithBestAnswer = postsStore.posts.filter(p => p.bestAnswerId)
+      for (const post of postsWithBestAnswer) {
+        // Check if we already have this comment in the store
+        const hasComment = postsStore.comments.some(c => c.id === post.bestAnswerId)
+        if (!hasComment) {
+          try {
+            // Fetch comments for this post to get the best answer comment
+            await postsStore.fetchPostById(post.id)
+          } catch (e) {
+            // Silently continue if we can't fetch a post
+          }
+        }
+      }
     } catch (e) {
       console.error('Failed to fetch user posts:', e)
     }
@@ -118,7 +176,28 @@ const answersCount = computed(() => {
   if (!auth.user) return 0
   return postsStore.comments.filter(c => c.author?.id === auth.user!.id).length
 })
-const bestAnswersCount = computed(() => 0) // Not implemented yet
+const bestAnswersCount = computed(() => {
+  if (!auth.user) return 0
+  
+  // Count how many of the user's comments are marked as best answers
+  let count = 0
+  
+  // Get all posts that have a bestAnswerId
+  const postsWithBestAnswer = postsStore.posts.filter(p => p.bestAnswerId)
+  
+  // For each post with a best answer, check if that comment belongs to the current user
+  postsWithBestAnswer.forEach(post => {
+    if (post.bestAnswerId) {
+      // Find the comment in the store
+      const bestComment = postsStore.comments.find(c => c.id === post.bestAnswerId)
+      if (bestComment && bestComment.author?.id === auth.user!.id) {
+        count++
+      }
+    }
+  })
+  
+  return count
+})
 
 // current user's posts with meta (tags, answersCount, etc.)
 const myPosts = computed(() => {
@@ -128,6 +207,20 @@ const myPosts = computed(() => {
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString()
+}
+
+async function handleDeleteAccount() {
+  if (!auth.user) return
+  
+  try {
+    await auth.deleteUser(auth.user.id)
+    success(t('profile.accountDeleted'))
+    showDeleteConfirm.value = false
+    // Redirect to home after deletion (logout is handled in deleteUser)
+    router.push('/home')
+  } catch (e: any) {
+    showError(e.response?.data?.message || e.message || 'Failed to delete account')
+  }
 }
 </script>
 
@@ -291,5 +384,81 @@ function formatDate(iso: string) {
 
 .meta-item {
   font-size: 14px;
+}
+
+/* Delete Account Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 24px;
+  max-width: 500px;
+  width: 90%;
+}
+
+.modal-content h3 {
+  margin: 0 0 16px;
+  font-size: 20px;
+  color: var(--text);
+}
+
+.warning-text {
+  color: var(--muted);
+  margin: 0 0 24px;
+  line-height: 1.6;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.cf-btn-danger {
+  background: #dc2626;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.cf-btn-danger:hover:not(:disabled) {
+  background: #b91c1c;
+}
+
+.cf-btn-danger:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.cf-btn-secondary {
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--line);
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.cf-btn-secondary:hover {
+  background: var(--panel);
 }
 </style>

@@ -41,11 +41,23 @@
     "noPostsYet": "لا توجد منشورات بعد",
     "createFirstPost": "إنشاء أول منشور لك",
     "yourPosts": "منشوراتك",
-    "shareFirstError": "شارك أول خطأ برمجي لك واحصل على المساعدة من المجتمع"
+    "shareFirstError": "شارك أول خطأ برمجي لك واحصل على المساعدة من المجتمع",
+    "edit": "تعديل",
+    "delete": "حذف",
+    "save": "حفظ",
+    "editPost": "تعديل المنشور",
+    "editAnswer": "تعديل الإجابة",
+    "confirmDelete": "تأكيد الحذف",
+    "content": "المحتوى",
+    "bestAnswer": "أفضل إجابة",
+    "markAsBestAnswer": "تعيين كأفضل إجابة",
+    "removeBestAnswer": "إزالة أفضل إجابة",
+    "loading": "جاري التحميل",
+    "backToHome": "العودة إلى الرئيسية"
   },
   "navbar": {
     "brand": "CodeFix",
-    "searchPlaceholder": "البحث في المنشورات، العلامات...",
+    "searchPlaceholder": "البحث في المنشورات",
     "searchAriaLabel": "بحث"
   },
   "footer": {
@@ -103,7 +115,27 @@
     "addNewPost": "إضافة منشور جديد",
     "postsCount": "المنشورات",
     "answersCount": "الإجابات",
-    "bestAnswersCount": "أفضل الإجابات"
+    "bestAnswersCount": "أفضل الإجابات",
+    "deleteAccount": "حذف الحساب",
+    "confirmDeleteAccount": "هل أنت متأكد أنك تريد حذف حسابك؟",
+    "deleteAccountWarning": "لا يمكن التراجع عن هذا الإجراء. سيتم حذف جميع منشوراتك وتعليقاتك وبياناتك بشكل دائم.",
+    "accountDeleted": "تم حذف الحساب بنجاح"
+  },
+  "userProfile": {
+    "userPosts": "المنشورات",
+    "noPostsYet": "لا توجد منشورات بعد",
+    "userHasNoPosts": "لم يشارك هذا المستخدم أي منشورات بعد."
+  },
+  "admin": {
+    "blocked": "محظور",
+    "blockUser": "حظر المستخدم",
+    "unblockUser": "إلغاء حظر المستخدم",
+    "deleteUser": "حذف المستخدم",
+    "confirmDeleteUser": "تأكيد حذف المستخدم",
+    "deleteUserWarning": "هل أنت متأكد أنك تريد حذف {username}؟ لا يمكن التراجع عن هذا الإجراء. سيتم حذف جميع منشوراتهم وتعليقاتهم وبياناتهم بشكل دائم.",
+    "userBlocked": "تم حظر المستخدم {username}",
+    "userUnblocked": "تم إلغاء حظر المستخدم {username}",
+    "userDeleted": "تم حذف المستخدم {username}"
   },
   "support": {
     "title": "ادعم CodeFix",

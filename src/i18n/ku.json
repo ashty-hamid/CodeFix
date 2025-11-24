@@ -41,11 +41,23 @@
     "noPostsYet": "هیچ پۆستێک نییە هێشتا",
     "createFirstPost": "یەکەم پۆستت دروست بکە",
     "yourPosts": "پۆستەکانت",
-    "shareFirstError": "یەکەم هەڵەی کۆدکردنت هاوبەش بکە و یارمەتی لە کۆمەڵگا وەربگرە"
+    "shareFirstError": "یەکەم هەڵەی کۆدکردنت هاوبەش بکە و یارمەتی لە کۆمەڵگا وەربگرە",
+    "edit": "دەستکاری",
+    "delete": "سڕینەوە",
+    "save": "پاشەکەوت",
+    "editPost": "دەستکاری پۆست",
+    "editAnswer": "دەستکاری وەڵام",
+    "confirmDelete": "دڵنیابوونەوەی سڕینەوە",
+    "content": "ناوەڕۆک",
+    "bestAnswer": "باشترین وەڵام",
+    "markAsBestAnswer": "نیشانکردن وەک باشترین وەڵام",
+    "removeBestAnswer": "لابردنی باشترین وەڵام",
+    "loading": "بارکردن",
+    "backToHome": "گەڕانەوە بۆ سەرەکی"
   },
   "navbar": {
     "brand": "CodeFix",
-    "searchPlaceholder": "گەڕان لە پۆستەکان، تاگەکان...",
+    "searchPlaceholder": "گەڕان لە پۆستەکان",
     "searchAriaLabel": "گەڕان"
   },
   "footer": {
@@ -103,7 +115,27 @@
     "addNewPost": "پۆستێکی نوێ زیاد بکە",
     "postsCount": "پۆستەکان",
     "answersCount": "وەڵامەکان",
-    "bestAnswersCount": "باشترین وەڵامەکان"
+    "bestAnswersCount": "باشترین وەڵامەکان",
+    "deleteAccount": "سڕینەوەی هەژمار",
+    "confirmDeleteAccount": "دڵنیایت لە سڕینەوەی هەژمارەکەت؟",
+    "deleteAccountWarning": "ئەم کارە ناگەڕێتەوە. هەموو پۆست و وەڵام و زانیاریەکانت بە شێوەیەکی هەمیشەیی دەسڕدرێنەوە.",
+    "accountDeleted": "هەژمارەکە بە سەرکەوتوویی سڕایەوە"
+  },
+  "userProfile": {
+    "userPosts": "پۆستەکان",
+    "noPostsYet": "هیچ پۆستێک نییە هێشتا",
+    "userHasNoPosts": "ئەم بەکارهێنەرە هیچ پۆستێکی هاوبەش نەکردووە."
+  },
+  "admin": {
+    "blocked": "قەدەغەکراو",
+    "blockUser": "قەدەغەکردنی بەکارهێنەر",
+    "unblockUser": "لابردنی قەدەغە لە بەکارهێنەر",
+    "deleteUser": "سڕینەوەی بەکارهێنەر",
+    "confirmDeleteUser": "دڵنیابوونەوەی سڕینەوەی بەکارهێنەر",
+    "deleteUserWarning": "دڵنیایت لە سڕینەوەی {username}؟ ئەم کارە ناگەڕێتەوە. هەموو پۆست و وەڵام و زانیاریەکانیان بە شێوەیەکی هەمیشەیی دەسڕدرێنەوە.",
+    "userBlocked": "بەکارهێنەری {username} قەدەغە کرا",
+    "userUnblocked": "قەدەغەی بەکارهێنەری {username} لابرا",
+    "userDeleted": "بەکارهێنەری {username} سڕایەوە"
   },
   "support": {
     "title": "پشتگیری لە CodeFix بکە",

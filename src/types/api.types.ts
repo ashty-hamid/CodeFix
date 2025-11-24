@@ -8,6 +8,7 @@ export interface User {
   email: string;
   role: 'admin' | 'user';
   profileImageUrl?: string;
+  blocked?: boolean;
   createdAt: string;
   updatedAt?: string;
 }
@@ -34,6 +35,7 @@ export interface Post {
   author: Author;
   tags: Tag[];
   commentsCount: number;
+  bestAnswerId?: number | null;
 }
 
 export interface Comment {
@@ -44,6 +46,7 @@ export interface Comment {
   updatedAt: string;
   author: Author;
   postId: number;
+  isBestAnswer?: boolean;
 }
 
 export type VoteType = 'upvote' | 'downvote';
