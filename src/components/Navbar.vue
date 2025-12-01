@@ -29,6 +29,16 @@
           {{ $t('common.profile') }}
         </RouterLink>
 
+        <!-- ADMIN LINKS -->
+        <RouterLink
+          v-if="auth.isLoggedIn && auth.user?.role === 'admin'"
+          to="/admin/users"
+          class="cf-link"
+          active-class="cf-link-active"
+        >
+          {{ $t('common.adminUsers') }}
+        </RouterLink>
+
         <!-- AUTH BUTTONS -->
         <template v-if="!auth.isLoggedIn">
           <RouterLink to="/login">

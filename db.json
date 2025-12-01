@@ -11,33 +11,41 @@
       "updatedAt": "2025-01-02T12:00:00Z"
     },
     {
-      "id": 2,
+      "id": 1764627326644,
       "username": "sara",
-      "email": "sara@example.com",
-      "password": "password123",
-      "role": "user",
-      "profileImageUrl": "https://example.com/avatars/sara.png",
-      "createdAt": "2025-01-01T10:15:00Z",
-      "updatedAt": "2025-11-24T00:11:34.217Z",
-      "blocked": false
-    },
-    {
-      "id": 1763940831863,
-      "username": "a",
-      "email": "a@a.aa",
-      "password": "aaaaaaaa",
+      "email": "sara@a.com",
+      "password": "password",
       "role": "user",
       "profileImageUrl": "",
-      "createdAt": "2025-11-23T23:33:51.863Z",
-      "updatedAt": "2025-11-23T23:33:51.863Z"
+      "createdAt": "2025-12-01T22:15:26.644Z",
+      "updatedAt": "2025-12-01T22:28:02.860Z",
+      "blocked": true
     }
   ],
   "posts": [
     {
+      "id": 1764627459638,
+      "title": "eo",
+      "body": "kjjdpoj",
+      "views": 1,
+      "excerpt": "kjjdpoj",
+      "createdAt": "2025-12-01T22:17:39.638Z",
+      "authorId": 1764627326644
+    },
+    {
+      "id": 1764627351565,
+      "title": "Test",
+      "body": "Hi from Test",
+      "views": 4,
+      "excerpt": "Hi from Test",
+      "createdAt": "2025-12-01T22:15:51.565Z",
+      "authorId": 1764627326644
+    },
+    {
       "id": 1763935468638,
       "title": "ww",
       "body": "www",
-      "views": 114,
+      "views": 137,
       "excerpt": "www",
       "createdAt": "2025-11-23T22:04:28.638Z",
       "authorId": 1,
@@ -47,7 +55,7 @@
       "id": 1763935150913,
       "title": "Test",
       "body": "asasqasa",
-      "views": 25,
+      "views": 48,
       "excerpt": "asasqasa",
       "createdAt": "2025-11-23T21:59:10.913Z",
       "authorId": 1,
@@ -171,6 +179,12 @@
       "name": "Qui",
       "description": "",
       "createdAt": "2025-11-23T22:07:58.425Z"
+    },
+    {
+      "id": 5,
+      "name": "abc",
+      "description": "",
+      "createdAt": "2025-12-01T22:15:51.566Z"
     }
   ],
   "post_tags": [
@@ -189,6 +203,10 @@
     {
       "postId": 1763935150913,
       "tagId": null
+    },
+    {
+      "postId": 1764627351565,
+      "tagId": 5
     }
   ],
   "votes": [
@@ -310,6 +328,23 @@
       "createdAt": "2025-11-24T09:10:17.357Z",
       "userId": 1,
       "commentId": 1763938708688
+    }
+  ],
+  "payments": [
+    {
+      "paymentId": "679a2b3c-5041-4572-8301-58e2aa8738de",
+      "amount": 250,
+      "currency": "IQD",
+      "status": "pending",
+      "createdAt": "2025-12-01T21:56:44.081Z",
+      "description": "Support CodeFix - 250 IQD",
+      "readableCode": "SEDA-DJ0Y-QZBF",
+      "id": 1
+    },
+    {
+      "status": "paid",
+      "paidAt": "2025-12-01T22:03:53.540Z",
+      "id": 2
     }
   ]
 }

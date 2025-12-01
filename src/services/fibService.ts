@@ -1,21 +1,37 @@
 import axios from "axios";
-import type { Optional } from "@/types/common.types";
+
+// Use JSON server proxy in development to avoid CORS, direct URL in production
+const getBaseURL = () => {
+  if (import.meta.env.DEV) {
+    // Use JSON server proxy (same origin, no CORS)
+    return import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
+  }
+  // Production: use direct FIB API URL
+  return `https://fib.${import.meta.env.VITE_FIB_ENV}.fib.iq`;
+};
 
 const fibApiClient = axios.create({
-  baseURL: `https://fib.${import.meta.env.VITE_FIB_ENV}.fib.iq`,
+  baseURL: getBaseURL(),
   timeout: 10000,
   headers: {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${localStorage.getItem('fibAuthToken')}`,
+    'Content-Type': 'application/json'
   },
 });
 
+fibApiClient.interceptors.request.use((config) => {
+  const token = localStorage.getItem('fibAuthToken');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
 const ENDPOINTS = {
-  AUTH: "/auth/realms/fib-online-shop/protocol/openid-connect/token",
-  CREATE_PAYMENT: "/protected/v1/payments",
-  CHECK_PAYMENT: (paymentId: string) =>  `/protected/v1/payments/${paymentId}/status`,
-  CANCEL_PAYMENT: (paymentId: string) =>  `/protected/v1/payments/${paymentId}/cancel`,
-  REFUND_PAYMENT: (paymentId: string) =>  `/protected/v1/payments/${paymentId}/refund`,
+  AUTH: "/api/fib/auth/realms/fib-online-shop/protocol/openid-connect/token",
+  CREATE_PAYMENT: "/api/fib/protected/v1/payments",
+  CHECK_PAYMENT: (paymentId: string) =>  `/api/fib/protected/v1/payments/${paymentId}/status`,
+  CANCEL_PAYMENT: (paymentId: string) =>  `/api/fib/protected/v1/payments/${paymentId}/cancel`,
+  REFUND_PAYMENT: (paymentId: string) =>  `/api/fib/protected/v1/payments/${paymentId}/refund`,
 }
 
 interface Payment {
@@ -23,12 +39,12 @@ interface Payment {
     amount: string;
     currency: string;
   };
-  statusCallbackUrl: Optional<string> ;
+  statusCallbackUrl?: string ;
   description: string;
-  redirectUri: Optional<string>;
-  expiresIn: Optional<string>;
-  category: Optional<string>;
-  refundableFor: Optional<string>;
+  redirectUri?: string;
+  expiresIn?: string;
+  category?: string;
+  refundableFor?: string;
 }
 
 interface AuthorizationResponse {
@@ -54,14 +70,14 @@ interface CheckPaymentResponse {
   paymentId: string;
   status: string;
   validUntil: number;
-  paidAt: Optional<string>;
+  paidAt?: string;
   amount: {
     amount: number;
     currency: string;
   };
-  decliningReason: Optional<string>;
-  declinedAt: Optional<string>;
-  paidBy: Optional<string>;
+  decliningReason?: string;
+  declinedAt?: string;
+  paidBy?: string;
 }
 
 function encodeParams(params: Record<string, string>): string {
@@ -86,9 +102,10 @@ export const fibService = {
       },
     });
     localStorage.setItem('fibAuthToken', response.data.access_token);
+    return response.data;
   },
 
-  async createPayment(payment: Payment) {
+  async createPayment(payment: Payment): Promise<CreatePaymentResponse> {
     const response = await fibApiClient.post(ENDPOINTS.CREATE_PAYMENT, payment);
     return response.data;
   },

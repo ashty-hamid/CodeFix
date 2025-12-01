@@ -1,6 +1,9 @@
 const jsonServer = require('json-server');
 const jwt = require('jsonwebtoken');
 const path = require('path');
+const https = require('https');
+const http = require('http');
+const { URL } = require('url');
 const server = jsonServer.create();
 const router = jsonServer.router(path.join(__dirname, 'db.json'));
 const middlewares = jsonServer.defaults();
@@ -74,6 +77,22 @@ function requireOwnerOrAdmin(req, res, next) {
   if (req.user.role !== 'admin' && req.user.id !== resourceId) {
     return res.status(403).json({ message: 'Access denied' });
   }
+  next();
+}
+
+// Middleware to check if user is blocked
+function checkNotBlocked(req, res, next) {
+  const db = router.db;
+  const user = db.get('users').find({ id: req.user.id }).value();
+  
+  if (!user) {
+    return res.status(404).json({ message: 'User not found' });
+  }
+  
+  if (user.blocked) {
+    return res.status(403).json({ message: 'Your account has been blocked. You cannot perform this action.' });
+  }
+  
   next();
 }
 
@@ -153,6 +172,11 @@ server.post('/auth/login', (req, res) => {
     return res.status(401).json({ message: 'Invalid email or password' });
   }
 
+  // Check if user is blocked
+  if (user.blocked) {
+    return res.status(403).json({ message: 'Your account has been blocked. Please contact an administrator.' });
+  }
+
   // Remove password from response
   const { password: _, ...userWithoutPassword } = user;
   const access_token = generateToken(user);
@@ -188,7 +212,7 @@ server.get('/users/:id', authenticateToken, (req, res) => {
 });
 
 // Update user (protected - only owner or admin)
-server.put('/users/:id', authenticateToken, requireOwnerOrAdmin, (req, res) => {
+server.put('/users/:id', authenticateToken, checkNotBlocked, requireOwnerOrAdmin, (req, res) => {
   const db = router.db;
   const userId = parseInt(req.params.id);
   const user = db.get('users').find({ id: userId }).value();
@@ -223,6 +247,60 @@ server.delete('/users/:id', authenticateToken, requireAdmin, (req, res) => {
 
   db.get('users').remove({ id: userId }).write();
   res.status(204).send();
+});
+
+// Block user (protected - admin only)
+server.post('/users/:id/block', authenticateToken, requireAdmin, (req, res) => {
+  const db = router.db;
+  const userId = parseInt(req.params.id);
+  const user = db.get('users').find({ id: userId }).value();
+
+  if (!user) {
+    return res.status(404).json({ message: 'User not found' });
+  }
+
+  // Cannot block admin users
+  if (user.role === 'admin') {
+    return res.status(403).json({ message: 'Cannot block admin users' });
+  }
+
+  // Cannot block yourself
+  if (user.id === req.user.id) {
+    return res.status(403).json({ message: 'Cannot block yourself' });
+  }
+
+  const updatedUser = {
+    ...user,
+    blocked: true,
+    updatedAt: new Date().toISOString(),
+  };
+
+  db.get('users').find({ id: userId }).assign(updatedUser).write();
+
+  const { password, ...userWithoutPassword } = updatedUser;
+  res.json(userWithoutPassword);
+});
+
+// Unblock user (protected - admin only)
+server.post('/users/:id/unblock', authenticateToken, requireAdmin, (req, res) => {
+  const db = router.db;
+  const userId = parseInt(req.params.id);
+  const user = db.get('users').find({ id: userId }).value();
+
+  if (!user) {
+    return res.status(404).json({ message: 'User not found' });
+  }
+
+  const updatedUser = {
+    ...user,
+    blocked: false,
+    updatedAt: new Date().toISOString(),
+  };
+
+  db.get('users').find({ id: userId }).assign(updatedUser).write();
+
+  const { password, ...userWithoutPassword } = updatedUser;
+  res.json(userWithoutPassword);
 });
 
 // ============================================
@@ -345,7 +423,7 @@ server.get('/posts/:id', (req, res) => {
 });
 
 // Create post (protected)
-server.post('/posts', authenticateToken, (req, res) => {
+server.post('/posts', authenticateToken, checkNotBlocked, (req, res) => {
   const { title, body, tags: tagsInput } = req.body;
 
   if (!title || !body) {
@@ -435,7 +513,7 @@ server.post('/posts', authenticateToken, (req, res) => {
 });
 
 // Update post (protected - only author or admin)
-server.patch('/posts/:id', authenticateToken, (req, res) => {
+server.patch('/posts/:id', authenticateToken, checkNotBlocked, (req, res) => {
   const db = router.db;
   const postId = parseInt(req.params.id);
   const post = db.get('posts').find({ id: postId }).value();
@@ -507,7 +585,7 @@ server.patch('/posts/:id', authenticateToken, (req, res) => {
 });
 
 // Delete post (protected - only author or admin)
-server.delete('/posts/:id', authenticateToken, (req, res) => {
+server.delete('/posts/:id', authenticateToken, checkNotBlocked, (req, res) => {
   const db = router.db;
   const postId = parseInt(req.params.id);
   const post = db.get('posts').find({ id: postId }).value();
@@ -549,7 +627,7 @@ server.get('/comments/post/:postId', (req, res) => {
 });
 
 // Create comment (protected)
-server.post('/comments', authenticateToken, (req, res) => {
+server.post('/comments', authenticateToken, checkNotBlocked, (req, res) => {
   const { content, postId } = req.body;
 
   if (!content || !postId) {
@@ -583,7 +661,7 @@ server.post('/comments', authenticateToken, (req, res) => {
 });
 
 // Update comment (protected - only author or admin)
-server.patch('/comments/:id', authenticateToken, (req, res) => {
+server.patch('/comments/:id', authenticateToken, checkNotBlocked, (req, res) => {
   const db = router.db;
   const commentId = parseInt(req.params.id);
   const comment = db.get('comments').find({ id: commentId }).value();
@@ -612,7 +690,7 @@ server.patch('/comments/:id', authenticateToken, (req, res) => {
 });
 
 // Delete comment (protected - only author or admin)
-server.delete('/comments/:id', authenticateToken, (req, res) => {
+server.delete('/comments/:id', authenticateToken, checkNotBlocked, (req, res) => {
   const db = router.db;
   const commentId = parseInt(req.params.id);
   const comment = db.get('comments').find({ id: commentId }).value();
@@ -632,7 +710,7 @@ server.delete('/comments/:id', authenticateToken, (req, res) => {
 });
 
 // Vote on comment (protected)
-server.post('/comments/:id/vote', authenticateToken, (req, res) => {
+server.post('/comments/:id/vote', authenticateToken, checkNotBlocked, (req, res) => {
   const db = router.db;
   const commentId = parseInt(req.params.id);
   const { type } = req.body;
@@ -693,7 +771,7 @@ server.post('/comments/:id/vote', authenticateToken, (req, res) => {
 });
 
 // Remove vote from comment (protected)
-server.delete('/comments/:id/vote', authenticateToken, (req, res) => {
+server.delete('/comments/:id/vote', authenticateToken, checkNotBlocked, (req, res) => {
   const db = router.db;
   const commentId = parseInt(req.params.id);
 
@@ -829,6 +907,116 @@ server.get('/tags/:id', (req, res) => {
 
   res.json(tag);
 });
+
+// ============================================
+// FIB API Proxy Routes (to avoid CORS)
+// ============================================
+
+// Get FIB base URL from environment or default to stage
+const FIB_BASE_URL = process.env.FIB_BASE_URL || 'https://fib.stage.fib.iq';
+
+// Helper function to proxy requests to FIB API
+function proxyToFibApi(req, res) {
+  // Handle preflight OPTIONS requests first
+  if (req.method === 'OPTIONS') {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.status(200).end();
+    return;
+  }
+
+  const targetPath = req.path.replace('/api/fib', '');
+  const targetUrl = `${FIB_BASE_URL}${targetPath}${req.url.includes('?') ? req.url.substring(req.url.indexOf('?')) : ''}`;
+  
+  console.log(`[FIB Proxy] ${req.method} ${req.path} -> ${targetUrl}`);
+  
+  const url = new URL(targetUrl);
+  
+  // Prepare headers
+  const headers = {};
+  // Copy relevant headers
+  if (req.headers['content-type']) {
+    headers['content-type'] = req.headers['content-type'];
+  }
+  if (req.headers['authorization']) {
+    headers['authorization'] = req.headers['authorization'];
+  }
+  
+  const options = {
+    hostname: url.hostname,
+    port: url.port || (url.protocol === 'https:' ? 443 : 80),
+    path: url.pathname + url.search,
+    method: req.method,
+    headers: headers,
+  };
+
+  // Use https for https URLs, http for http URLs
+  const requestModule = url.protocol === 'https:' ? https : http;
+
+  const proxyReq = requestModule.request(options, (proxyRes) => {
+    // Set CORS headers
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    
+    // Copy status code
+    res.statusCode = proxyRes.statusCode;
+    
+    // Copy headers
+    Object.keys(proxyRes.headers).forEach((key) => {
+      // Skip headers that shouldn't be forwarded
+      if (key.toLowerCase() !== 'content-encoding' && 
+          key.toLowerCase() !== 'transfer-encoding' &&
+          key.toLowerCase() !== 'connection') {
+        res.setHeader(key, proxyRes.headers[key]);
+      }
+    });
+    
+    // Pipe the response
+    proxyRes.pipe(res);
+  });
+
+  proxyReq.on('error', (error) => {
+    console.error(`[FIB Proxy] Error:`, error);
+    if (!res.headersSent) {
+      res.status(500).json({ 
+        message: 'Proxy error', 
+        error: error.message 
+      });
+    }
+  });
+
+  // Forward request body
+  if (req.method !== 'GET' && req.method !== 'HEAD' && req.method !== 'OPTIONS') {
+    // If body was parsed by bodyParser, use it; otherwise pipe the raw request
+    if (req.body !== undefined) {
+      let bodyData;
+      if (typeof req.body === 'string') {
+        bodyData = req.body;
+      } else if (req.headers['content-type']?.includes('application/x-www-form-urlencoded')) {
+        // For form-urlencoded, convert object to string
+        bodyData = Object.entries(req.body)
+          .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
+          .join('&');
+      } else {
+        // For JSON, stringify
+        bodyData = JSON.stringify(req.body);
+      }
+      proxyReq.write(bodyData);
+      proxyReq.end();
+    } else {
+      // If body wasn't parsed, pipe the raw request
+      req.pipe(proxyReq);
+    }
+  } else {
+    // For GET/HEAD, just end the request
+    proxyReq.end();
+  }
+}
+
+// FIB API proxy routes
+server.all('/api/fib/*', proxyToFibApi);
 
 // 404 handler - must be before json-server router
 server.use((req, res, next) => {

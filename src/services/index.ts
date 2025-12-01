@@ -10,5 +10,7 @@ export { authService } from './authService';
 export { userService } from './userService';
 export { productService } from './productService';
 export { tagService } from './tagService';
+export { paymentService } from './paymentService';
+export type { Payment } from './paymentService';
 export { default as apiClient } from './api';
 

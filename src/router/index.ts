@@ -10,6 +10,7 @@ const SignupView = () => import('@/views/Signupview.vue')
 const ProfileView = () => import('@/views/Profileview.vue')
 const UserProfileView = () => import('@/views/UserProfileView.vue')
 const SupportView = () => import('@/views/SupportView.vue')
+const AdminUsersView = () => import('@/views/AdminUsersView.vue')
 
 const routes = [
   { path: '/', redirect: '/home' }, // landing
@@ -20,6 +21,9 @@ const routes = [
   // protected routes (login required)
   { path: '/add', name: 'add', component: AddPostView, meta: { requiresAuth: true } },
   { path: '/profile', name: 'profile', component: ProfileView, meta: { requiresAuth: true } },
+  
+  // admin routes (admin only)
+  { path: '/admin/users', name: 'adminUsers', component: AdminUsersView, meta: { requiresAuth: true, requiresAdmin: true } },
 
   // public auth
   { path: '/login', name: 'login', component: LoginView },
@@ -32,11 +36,15 @@ const router = createRouter({
   routes,
 })
 
-// Route guard for authentication
+// Route guard for authentication and authorization
 router.beforeEach((to) => {
   const auth = useAuthStore()
   if (to.meta.requiresAuth && !auth.isLoggedIn) {
     return { name: 'login', query: { redirect: to.fullPath } }
+  }
+  // Check admin access
+  if (to.meta.requiresAdmin && auth.user?.role !== 'admin') {
+    return { name: 'home' }
   }
   // Redirect to home if already logged in and trying to access login/signup
   if ((to.name === 'login' || to.name === 'signup') && auth.isLoggedIn) {
