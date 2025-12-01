@@ -2,7 +2,7 @@ import axios from "axios";
 import type { Optional } from "@/types/common.types";
 
 const fibApiClient = axios.create({
-  baseURL: `https://fib.${import.meta.env.}.fib.iq`,
+  baseURL: `https://fib.${import.meta.env.VITE_FIB_ENV}.fib.iq`,
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
@@ -64,16 +64,28 @@ interface CheckPaymentResponse {
   paidBy: Optional<string>;
 }
 
+function encodeParams(params: Record<string, string>): string {
+  return Object.entries(params)
+    .map(([key, value]) => 
+      `${encodeURIComponent(key)}=${encodeURIComponent(value)}`
+    )
+    .join("&");
+}
 
 export const fibService = {
 
   async authorize() {
-    const response = await fibApiClient.post(ENDPOINTS.AUTH, {
+    
+    const response = await fibApiClient.post<AuthorizationResponse>(ENDPOINTS.AUTH, {
       grant_type: 'client_credentials',
       client_id: import.meta.env.VITE_FIB_CLIENT_ID,
       client_secret: import.meta.env.VITE_FIB_CLIENT_SECRET,
+    }, {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
     });
-    return response.data;
+    localStorage.setItem('fibAuthToken', response.data.access_token);
   },
 
   async createPayment(payment: Payment) {

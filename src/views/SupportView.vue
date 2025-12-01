@@ -51,10 +51,17 @@
       <p style="margin-top: 25px; text-align: center; color: var(--muted)">
         {{ $t('support.thankYou') }}
       </p>
+      <button @click="sendPayment">Send Payment</button>
     </div>
   </DefaultLayout>
 </template>
 
 <script setup lang="ts">
 import DefaultLayout from '@/components/layouts/DefaultLayout.vue'
+import { fibService } from '@/services/fibService'
+
+const sendPayment = async () => {
+  const response = await fibService.authorize()
+  // console.log(response)
+}
 </script>

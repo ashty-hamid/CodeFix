@@ -37,7 +37,7 @@
       "id": 1763935468638,
       "title": "ww",
       "body": "www",
-      "views": 106,
+      "views": 114,
       "excerpt": "www",
       "createdAt": "2025-11-23T22:04:28.638Z",
       "authorId": 1,
@@ -47,7 +47,7 @@
       "id": 1763935150913,
       "title": "Test",
       "body": "asasqasa",
-      "views": 11,
+      "views": 25,
       "excerpt": "asasqasa",
       "createdAt": "2025-11-23T21:59:10.913Z",
       "authorId": 1,
@@ -66,7 +66,7 @@
       "id": 1763934401918,
       "title": "hi",
       "body": "hello",
-      "views": 11,
+      "views": 13,
       "excerpt": "hello",
       "createdAt": "2025-11-23T21:46:41.918Z",
       "authorId": 1
@@ -75,7 +75,7 @@
       "id": 2,
       "title": "Zod vs Yup — Which Should You Use?",
       "body": "In this post, we'll compare two schema validation libraries and help you decide which one fits your project best...",
-      "views": 89,
+      "views": 90,
       "excerpt": "Comparing Zod and Yup for frontend developers.",
       "createdAt": "2025-01-02T10:00:00Z",
       "authorId": 2,
@@ -131,7 +131,7 @@
     {
       "id": 1763938708688,
       "content": "ss",
-      "score": 0,
+      "score": 1,
       "createdAt": "2025-11-23T22:58:28.688Z",
       "updatedAt": "2025-11-23T22:58:28.688Z",
       "postId": 1763935150913,
@@ -303,6 +303,13 @@
       "createdAt": "2025-11-23T23:33:56.768Z",
       "userId": 1763940831863,
       "commentId": 1763939134915
+    },
+    {
+      "id": 1763975417357,
+      "type": "upvote",
+      "createdAt": "2025-11-24T09:10:17.357Z",
+      "userId": 1,
+      "commentId": 1763938708688
     }
   ]
 }
